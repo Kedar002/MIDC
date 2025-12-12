@@ -445,200 +445,147 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
         ),
         const Divider(height: 1),
         Expanded(
-          child: ListView(
+          child: GridView.builder(
             padding: const EdgeInsets.all(16),
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Text(
-                  'Financial Information',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryBlue,
-                  ),
-                ),
-              ),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 2.5,
-                children: [
-                  _buildTextField(
-                    label: 'Agreement Amount',
-                    responsiblePerson: 'EE',
-                    controller: _agreementAmountController,
-                    hintText: 'Enter amount in Crores',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
-                    suffix: 'Cr',
-                  ),
-                  _buildDateField(),
-                  _buildTextField(
-                    label: 'Tender Period',
-                    responsiblePerson: 'EE',
-                    controller: _tenderPeriodController,
-                    hintText: 'e.g., 24 months',
-                  ),
-                  _buildTextField(
-                    label: 'Cumulative Expenditure',
-                    responsiblePerson: 'Fin',
-                    controller: _cumulativeExpenditureController,
-                    hintText: 'Enter amount in Crores',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
-                    suffix: 'Cr',
-                  ),
-                  _buildTextField(
-                    label: 'Final Bill',
-                    responsiblePerson: 'JMD',
-                    controller: _finalBillController,
-                    hintText: 'Enter amount in Crores',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
-                    suffix: 'Cr',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Text(
-                  'Milestone Progress',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryBlue,
-                  ),
-                ),
-              ),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 2.2,
-                children: [
-                  _buildMilestoneCard(
-                    label: 'First Milestone',
-                    controller: _firstMilestoneController,
-                  ),
-                  _buildMilestoneCard(
-                    label: 'Second Milestone',
-                    controller: _secondMilestoneController,
-                  ),
-                  _buildMilestoneCard(
-                    label: 'Third Milestone',
-                    controller: _thirdMilestoneController,
-                  ),
-                  _buildMilestoneCard(
-                    label: 'Fourth Milestone',
-                    controller: _fourthMilestoneController,
-                  ),
-                  _buildMilestoneCard(
-                    label: 'Fifth Milestone',
-                    controller: _fifthMilestoneController,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Text(
-                  'Project Issues & Changes',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryBlue,
-                  ),
-                ),
-              ),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 2.5,
-                children: [
-                  _buildTextField(
-                    label: 'LD (Liquidated Damages)',
-                    responsiblePerson: 'EE',
-                    controller: _ldController,
-                    hintText: 'Enter LD details',
-                    maxLines: 2,
-                  ),
-                  _buildTextField(
-                    label: 'COS (Change of Scope)',
-                    responsiblePerson: 'CE',
-                    controller: _cosController,
-                    hintText: 'Enter COS details',
-                    maxLines: 2,
-                  ),
-                  _buildTextField(
-                    label: 'EOT (Extension of Time)',
-                    responsiblePerson: 'JMD',
-                    controller: _eotController,
-                    hintText: 'Enter EOT details',
-                    maxLines: 2,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Text(
-                  'Audit & Compliance',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryBlue,
-                  ),
-                ),
-              ),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 2.5,
-                children: [
-                  _buildTextField(
-                    label: 'Audit Para',
-                    responsiblePerson: 'Fin',
-                    controller: _auditParaController,
-                    hintText: 'Enter audit para details',
-                    maxLines: 2,
-                  ),
-                  _buildTextField(
-                    label: 'Replies',
-                    responsiblePerson: 'SE',
-                    controller: _repliesController,
-                    hintText: 'Enter replies',
-                    maxLines: 2,
-                  ),
-                  _buildTextField(
-                    label: 'LAQ / LCQ',
-                    responsiblePerson: 'SE',
-                    controller: _laqLcqController,
-                    hintText: 'Enter LAQ/LCQ details',
-                    maxLines: 2,
-                  ),
-                  _buildTextField(
-                    label: 'Technical Audit',
-                    responsiblePerson: 'JMD',
-                    controller: _techAuditController,
-                    hintText: 'Enter tech audit details',
-                    maxLines: 2,
-                  ),
-                ],
-              ),
-            ],
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 300,
+              mainAxisExtent: 140,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            itemCount: 17,
+            itemBuilder: (context, index) {
+              // Financial Information (0-4)
+              if (index == 0) {
+                return _buildTextField(
+                  label: 'Agreement Amount',
+                  responsiblePerson: 'EE',
+                  controller: _agreementAmountController,
+                  hintText: 'Enter amount in Crores',
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                  suffix: 'Cr',
+                );
+              } else if (index == 1) {
+                return _buildDateField();
+              } else if (index == 2) {
+                return _buildTextField(
+                  label: 'Tender Period',
+                  responsiblePerson: 'EE',
+                  controller: _tenderPeriodController,
+                  hintText: 'e.g., 24 months',
+                );
+              } else if (index == 3) {
+                return _buildTextField(
+                  label: 'Cumulative Expenditure',
+                  responsiblePerson: 'Fin',
+                  controller: _cumulativeExpenditureController,
+                  hintText: 'Enter amount in Crores',
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                  suffix: 'Cr',
+                );
+              } else if (index == 4) {
+                return _buildTextField(
+                  label: 'Final Bill',
+                  responsiblePerson: 'JMD',
+                  controller: _finalBillController,
+                  hintText: 'Enter amount in Crores',
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                  suffix: 'Cr',
+                );
+              }
+              // Milestone Progress (5-9)
+              else if (index == 5) {
+                return _buildMilestoneCard(
+                  label: 'First Milestone',
+                  controller: _firstMilestoneController,
+                );
+              } else if (index == 6) {
+                return _buildMilestoneCard(
+                  label: 'Second Milestone',
+                  controller: _secondMilestoneController,
+                );
+              } else if (index == 7) {
+                return _buildMilestoneCard(
+                  label: 'Third Milestone',
+                  controller: _thirdMilestoneController,
+                );
+              } else if (index == 8) {
+                return _buildMilestoneCard(
+                  label: 'Fourth Milestone',
+                  controller: _fourthMilestoneController,
+                );
+              } else if (index == 9) {
+                return _buildMilestoneCard(
+                  label: 'Fifth Milestone',
+                  controller: _fifthMilestoneController,
+                );
+              }
+              // Project Issues & Changes (10-12)
+              else if (index == 10) {
+                return _buildTextField(
+                  label: 'LD (Liquidated Damages)',
+                  responsiblePerson: 'EE',
+                  controller: _ldController,
+                  hintText: 'Enter LD details',
+                  maxLines: 2,
+                );
+              } else if (index == 11) {
+                return _buildTextField(
+                  label: 'COS (Change of Scope)',
+                  responsiblePerson: 'CE',
+                  controller: _cosController,
+                  hintText: 'Enter COS details',
+                  maxLines: 2,
+                );
+              } else if (index == 12) {
+                return _buildTextField(
+                  label: 'EOT (Extension of Time)',
+                  responsiblePerson: 'JMD',
+                  controller: _eotController,
+                  hintText: 'Enter EOT details',
+                  maxLines: 2,
+                );
+              }
+              // Audit & Compliance (13-17)
+              else if (index == 13) {
+                return _buildTextField(
+                  label: 'Audit Para',
+                  responsiblePerson: 'Fin',
+                  controller: _auditParaController,
+                  hintText: 'Enter audit para details',
+                  maxLines: 2,
+                );
+              } else if (index == 14) {
+                return _buildTextField(
+                  label: 'Replies',
+                  responsiblePerson: 'SE',
+                  controller: _repliesController,
+                  hintText: 'Enter replies',
+                  maxLines: 2,
+                );
+              } else if (index == 15) {
+                return _buildTextField(
+                  label: 'LAQ / LCQ',
+                  responsiblePerson: 'SE',
+                  controller: _laqLcqController,
+                  hintText: 'Enter LAQ/LCQ details',
+                  maxLines: 2,
+                );
+              } else if (index == 16) {
+                return _buildTextField(
+                  label: 'Technical Audit',
+                  responsiblePerson: 'JMD',
+                  controller: _techAuditController,
+                  hintText: 'Enter tech audit details',
+                  maxLines: 2,
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
           ),
         ),
       ],

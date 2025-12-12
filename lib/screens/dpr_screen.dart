@@ -347,65 +347,67 @@ class _DPRScreenState extends State<DPRScreen> {
         ),
         const Divider(height: 1),
         Expanded(
-          child: ListView(
+          child: GridView.builder(
             padding: const EdgeInsets.all(16),
-            children: [
-              Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Broad Scope of Work',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textPrimary,
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 300,
+              mainAxisExtent: 140,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            itemCount: AppConstants.dprFields.length,
+            itemBuilder: (context, index) {
+              final fieldInfo = AppConstants.dprFields[index];
+              final fieldName = _getFieldNameFromIndex(index);
+
+              // Special handling for Broad Scope field
+              if (fieldName == 'broadScope') {
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Broad Scope of Work',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Responsible: Engineering',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppTheme.textHint,
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Responsible: Engineering',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppTheme.textHint,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: _broadScopeController,
-                        enabled: _isEditing,
-                        maxLines: 2,
-                        decoration: InputDecoration(
-                          hintText: 'Enter broad scope of work...',
-                          filled: true,
-                          fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
+                        const SizedBox(height: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: _broadScopeController,
+                            enabled: _isEditing,
+                            maxLines: null,
+                            expands: true,
+                            textAlignVertical: TextAlignVertical.top,
+                            decoration: InputDecoration(
+                              hintText: 'Enter broad scope of work...',
+                              filled: true,
+                              fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 300,
-                  mainAxisExtent: 140,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                itemCount: AppConstants.dprFields.length - 1, // Exclude Broad Scope
-                itemBuilder: (context, index) {
-                  final fieldInfo = AppConstants.dprFields[index + 1]; // Skip first (Broad Scope)
-                  final fieldName = _getFieldNameFromIndex(index);
-                  return _buildDateField(fieldName, fieldInfo);
-                },
-              ),
-            ],
+                );
+              }
+
+              return _buildDateField(fieldName, fieldInfo);
+            },
           ),
         ),
       ],
@@ -414,6 +416,7 @@ class _DPRScreenState extends State<DPRScreen> {
 
   String _getFieldNameFromIndex(int index) {
     const fieldNames = [
+      'broadScope',
       'bidDocDPR',
       'tenderInvite',
       'prebid',
