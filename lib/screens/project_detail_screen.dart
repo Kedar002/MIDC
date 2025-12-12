@@ -17,6 +17,8 @@ class ProjectDetailScreen extends StatefulWidget {
 
 class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   int _selectedIndex = 1; // Start with Work tab (index 1)
+  bool _isDrawerExpanded = false;
+  bool _isDrawerPinned = false;
 
   final List<Map<String, dynamic>> _tabs = [
     {
@@ -56,6 +58,55 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     }
   }
 
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required bool isExpanded,
+    required VoidCallback onTap,
+    String? tooltip,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      child: Material(
+        color: isSelected ? AppTheme.primaryBlue : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Tooltip(
+            message: tooltip ?? label,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
+                    size: 20,
+                    color: isSelected ? Colors.white : AppTheme.textPrimary,
+                  ),
+                  if (isExpanded) ...[
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          color: isSelected ? Colors.white : AppTheme.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +128,17 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: Icon(_isDrawerPinned ? Icons.push_pin : Icons.push_pin_outlined),
+            onPressed: () {
+              setState(() {
+                _isDrawerPinned = !_isDrawerPinned;
+                _isDrawerExpanded = _isDrawerPinned;
+              });
+            },
+            tooltip: _isDrawerPinned ? 'Unpin sidebar' : 'Pin sidebar',
+          ),
+          const SizedBox(width: 8),
           Container(
             margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -116,159 +178,54 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
       ),
       body: Row(
         children: [
-          Container(
-            width: 200,
-            decoration: BoxDecoration(
-              color: AppTheme.sidebarBackground,
-              border: Border(
-                right: BorderSide(color: Colors.grey.shade300),
+          // Collapsible Drawer
+          MouseRegion(
+            onEnter: (_) {
+              if (!_isDrawerPinned) {
+                setState(() {
+                  _isDrawerExpanded = true;
+                });
+              }
+            },
+            onExit: (_) {
+              if (!_isDrawerPinned) {
+                setState(() {
+                  _isDrawerExpanded = false;
+                });
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: _isDrawerExpanded ? 220 : 60,
+              decoration: BoxDecoration(
+                color: AppTheme.sidebarBackground,
+                border: Border(
+                  right: BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  ...List.generate(_tabs.length, (index) {
+                    final tab = _tabs[index];
+                    return _buildDrawerItem(
+                      icon: tab['icon'],
+                      label: tab['title'],
+                      isSelected: _selectedIndex == index,
+                      isExpanded: _isDrawerExpanded,
+                      tooltip: tab['tooltip'],
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = index;
+                        });
+                      },
+                    );
+                  }),
+                ],
               ),
             ),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withOpacity(0.05),
-                    border: Border(
-                      bottom: BorderSide(color: Colors.grey.shade300),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundColor: AppTheme.getCategoryColor(widget.project.category).withOpacity(0.2),
-                        child: Text(
-                          '${widget.project.srNo}',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.getCategoryColor(widget.project.category),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        widget.project.name,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (widget.project.description != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.project.description!,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: AppTheme.textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: _tabs.length,
-                    itemBuilder: (context, index) {
-                      final tab = _tabs[index];
-                      final isSelected = _selectedIndex == index;
-
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        child: Material(
-                          color: isSelected
-                              ? AppTheme.primaryBlue
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _selectedIndex = index;
-                              });
-                            },
-                            borderRadius: BorderRadius.circular(8),
-                            child: Tooltip(
-                              message: tab['tooltip'],
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      tab['icon'],
-                                      size: 20,
-                                      color: isSelected ? Colors.white : AppTheme.textPrimary,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        tab['title'],
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                                          color: isSelected ? Colors.white : AppTheme.textPrimary,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: Colors.grey.shade300),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Overall Progress',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppTheme.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(
-                        value: widget.project.overallProgress / 100,
-                        backgroundColor: Colors.grey.shade300,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppTheme.getStatusColor(widget.project.status),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${widget.project.overallProgress}%',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryBlue,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
           ),
+          // Main Content
           Expanded(
             child: _getSelectedScreen(),
           ),

@@ -143,9 +143,9 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
     int maxLines = 1,
   }) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.all(4),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -153,7 +153,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.textPrimary,
               ),
@@ -164,23 +164,25 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
             Text(
               'Responsible: $responsiblePerson',
               style: const TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 color: AppTheme.textHint,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             TextField(
               controller: controller,
               enabled: _isEditing,
               keyboardType: keyboardType,
               inputFormatters: inputFormatters,
               maxLines: maxLines,
+              style: const TextStyle(fontSize: 12),
               decoration: InputDecoration(
                 hintText: hintText,
+                hintStyle: const TextStyle(fontSize: 11),
                 filled: true,
                 fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
                 suffixText: suffix,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               ),
             ),
           ],
@@ -194,9 +196,9 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
     final dateString = date != null ? _dateFormat.format(date) : 'Not set';
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.all(4),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -207,7 +209,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                   child: Text(
                     'Appointed Date',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.textPrimary,
                     ),
@@ -217,7 +219,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                 ),
                 if (_isEditing)
                   IconButton(
-                    icon: const Icon(Icons.calendar_today, size: 16),
+                    icon: const Icon(Icons.calendar_today, size: 14),
                     onPressed: () => _selectDate(context),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -228,14 +230,14 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
             const Text(
               'Responsible: SE',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 color: AppTheme.textHint,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
                 color: date != null
                     ? AppTheme.statusCompleted.withOpacity(0.1)
@@ -251,14 +253,14 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                 children: [
                   Icon(
                     date != null ? Icons.check_circle : Icons.radio_button_unchecked,
-                    size: 14,
+                    size: 12,
                     color: date != null ? AppTheme.statusCompleted : Colors.grey,
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 4),
                   Text(
                     dateString,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: date != null ? AppTheme.textPrimary : AppTheme.textHint,
                       fontWeight: date != null ? FontWeight.w500 : FontWeight.normal,
                     ),
@@ -279,9 +281,9 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
     final progress = int.tryParse(controller.text) ?? 0;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.all(4),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -289,7 +291,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: AppTheme.textPrimary,
               ),
@@ -298,11 +300,11 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
             const Text(
               'Responsible: EE',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 color: AppTheme.textHint,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -314,12 +316,14 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                       FilteringTextInputFormatter.digitsOnly,
                       FilteringTextInputFormatter.allow(RegExp(r'^([0-9]|[1-9][0-9]|100)$')),
                     ],
+                    style: const TextStyle(fontSize: 12),
                     decoration: InputDecoration(
-                      hintText: 'Progress 0-100',
+                      hintText: '0-100',
+                      hintStyle: const TextStyle(fontSize: 11),
                       filled: true,
                       fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
                       suffixText: '%',
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                     ),
                     onChanged: (value) {
                       setState(() {});
@@ -328,7 +332,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             LinearProgressIndicator(
               value: progress / 100,
               backgroundColor: Colors.grey.shade200,
@@ -449,7 +453,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 300,
-              mainAxisExtent: 140,
+              mainAxisExtent: 160,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
             ),
