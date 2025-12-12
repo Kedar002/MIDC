@@ -1,0 +1,131 @@
+{
+  "projects": [
+    {
+      "id": "proj-001",
+      "category": "A",
+      "srNo": 1,
+      "name": "Dwarka Circle",
+      "description": "Junction Development",
+      "dprData": {
+        "broadScope": "Junction Development",
+        "bidSubmit": "2025-11-28T00:00:00.000Z",
+        "workOrder": "2025-12-08T00:00:00.000Z"
+      },
+      "workData": {
+        "aa": "2025-10-15T00:00:00.000Z",
+        "bidInvite": "2025-11-20T00:00:00.000Z",
+        "bidSubmit": "2025-11-28T00:00:00.000Z"
+      },
+      "monitoringData": null,
+      "workEntryActivities": []
+    },
+    {
+      "id": "proj-006",
+      "category": "A",
+      "srNo": 6,
+      "name": "Nashik Airport",
+      "description": "Airport Infrastructure Development",
+      "dprData": null,
+      "workData": {
+        "aa": "2025-12-25T00:00:00.000Z",
+        "bidInvite": "2025-12-01T00:00:00.000Z"
+      },
+      "monitoringData": null,
+      "workEntryActivities": []
+    },
+    {
+      "id": "proj-009",
+      "category": "B",
+      "srNo": 9,
+      "name": "HAM-2 Road Furniture",
+      "description": "Highway Annuity Model - Road Furniture Project",
+      "dprData": null,
+      "workData": null,
+      "monitoringData": null,
+      "workEntryActivities": []
+    },
+    {
+      "id": "proj-017",
+      "category": "C",
+      "srNo": 17,
+      "name": "Nagpur Collector Office",
+      "description": "Collector Office Building Construction",
+      "dprData": null,
+      "workData": {
+        "aa": "2024-08-10T00:00:00.000Z",
+        "dpr": "2024-09-15T00:00:00.000Z",
+        "ts": "2024-10-01T00:00:00.000Z",
+        "bidDoc": "2024-11-05T00:00:00.000Z",
+        "bidInvite": "2024-11-15T00:00:00.000Z",
+        "prebid": "2024-11-25T00:00:00.000Z",
+        "bidSubmit": "2024-12-10T00:00:00.000Z",
+        "loa": "2025-01-05T00:00:00.000Z",
+        "agreement": "2025-01-20T00:00:00.000Z"
+      },
+      "monitoringData": {
+        "agreementAmount": 202.0,
+        "appointedDate": "2025-01-20T00:00:00.000Z",
+        "tenderPeriod": "24 months",
+        "firstMilestone": 25,
+        "secondMilestone": 15,
+        "thirdMilestone": 0,
+        "fourthMilestone": 0,
+        "fifthMilestone": 0
+      },
+      "workEntryActivities": []
+    },
+    {
+      "id": "proj-013",
+      "category": "C",
+      "srNo": 13,
+      "name": "PKV Stage - I",
+      "description": "PKV Agricultural University Development - Stage I",
+      "dprData": null,
+      "workData": {
+        "aa": "2025-03-01T00:00:00.000Z",
+        "dpr": "2025-04-10T00:00:00.000Z"
+      },
+      "monitoringData": null,
+      "workEntryActivities": []
+    },
+    {
+      "id": "proj-024",
+      "category": "C",
+      "srNo": 24,
+      "name": "MIHAN Convention Center",
+      "description": "MIHAN Multi-purpose Convention Center",
+      "dprData": null,
+      "workData": null,
+      "monitoringData": null,
+      "workEntryActivities": []
+    },
+    {
+      "id": "proj-025",
+      "category": "D",
+      "srNo": 25,
+      "name": "Pune Shirur Elevated Road",
+      "description": "NHAI Elevated Road Project",
+      "dprData": null,
+      "workData": {
+        "aa": "2025-02-01T00:00:00.000Z"
+      },
+      "monitoringData": null,
+      "workEntryActivities": []
+    },
+    {
+      "id": "proj-029",
+      "category": "E",
+      "srNo": 29,
+      "name": "Dharashiv Medical College",
+      "description": "Medical College Infrastructure Development",
+      "dprData": null,
+      "workData": {
+        "aa": "2024-12-01T00:00:00.000Z",
+        "dpr": "2024-12-20T00:00:00.000Z",
+        "ts": "2025-01-10T00:00:00.000Z"
+      },
+      "monitoringData": null,
+      "workEntryActivities": []
+    }
+  ]
+}
