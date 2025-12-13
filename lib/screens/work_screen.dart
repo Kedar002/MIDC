@@ -232,77 +232,20 @@ class _WorkScreenState extends State<WorkScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade200),
-            ),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.work, color: AppTheme.primaryBlue),
-              const SizedBox(width: 8),
-              const Text(
-                'Work Process',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              if (!_isEditing)
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _isEditing = true;
-                    });
-                  },
-                  icon: const Icon(Icons.edit, size: 18),
-                  label: const Text('Edit'),
-                ),
-              if (_isEditing) ...[
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _workData = widget.project.workData ?? WorkData();
-                      _isEditing = false;
-                    });
-                  },
-                  icon: const Icon(Icons.cancel, size: 18),
-                  label: const Text('Cancel'),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton.icon(
-                  onPressed: _saveChanges,
-                  icon: const Icon(Icons.save, size: 18),
-                  label: const Text('Save'),
-                ),
-              ],
-            ],
-          ),
-        ),
-        Expanded(
-          child: GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 300,
-              mainAxisExtent: 140,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemCount: AppConstants.workFields.length,
-            itemBuilder: (context, index) {
-              final fieldInfo = AppConstants.workFields[index];
-              final fieldName = _getFieldNameFromIndex(index);
-              return _buildDateField(fieldName, fieldInfo);
-            },
-          ),
-        ),
-      ],
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 300,
+        mainAxisExtent: 140,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: AppConstants.workFields.length,
+      itemBuilder: (context, index) {
+        final fieldInfo = AppConstants.workFields[index];
+        final fieldName = _getFieldNameFromIndex(index);
+        return _buildDateField(fieldName, fieldInfo);
+      },
     );
   }
 

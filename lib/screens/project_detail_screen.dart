@@ -109,22 +109,19 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentTab = _tabs[_selectedIndex];
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
           children: [
-            Text(widget.project.name),
-            Text(
-              '${widget.project.categoryName} • Category ${widget.project.category}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-            ),
+            Icon(currentTab['icon'], color: Colors.white),
+            const SizedBox(width: 8),
+            Text(currentTab['tooltip']),
           ],
         ),
         actions: [
@@ -137,41 +134,6 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
               });
             },
             tooltip: _isDrawerPinned ? 'Unpin sidebar' : 'Pin sidebar',
-          ),
-          const SizedBox(width: 8),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppTheme.getStatusColor(widget.project.status).withOpacity(0.2),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppTheme.getStatusColor(widget.project.status),
-                width: 1.5,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: AppTheme.getStatusColor(widget.project.status),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  widget.project.status,
-                  style: TextStyle(
-                    color: AppTheme.getStatusColor(widget.project.status),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
           ),
           const SizedBox(width: 8),
         ],
@@ -196,7 +158,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: _isDrawerExpanded ? 220 : 60,
+              width: _isDrawerExpanded ? 250 : 60,
               decoration: BoxDecoration(
                 color: AppTheme.sidebarBackground,
                 border: Border(
@@ -205,22 +167,124 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 8),
-                  ...List.generate(_tabs.length, (index) {
-                    final tab = _tabs[index];
-                    return _buildDrawerItem(
-                      icon: tab['icon'],
-                      label: tab['title'],
-                      isSelected: _selectedIndex == index,
-                      isExpanded: _isDrawerExpanded,
-                      tooltip: tab['tooltip'],
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = index;
-                        });
-                      },
-                    );
-                  }),
+                  // Project Info Section
+                  if (_isDrawerExpanded) ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue.withOpacity(0.05),
+                        border: Border(
+                          bottom: BorderSide(color: Colors.grey.shade300),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 24,
+                            backgroundColor: AppTheme.getCategoryColor(widget.project.category).withOpacity(0.2),
+                            child: Text(
+                              '${widget.project.srNo}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.getCategoryColor(widget.project.category),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            widget.project.name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${widget.project.categoryName} • Category ${widget.project.category}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppTheme.getStatusColor(widget.project.status).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppTheme.getStatusColor(widget.project.status),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.getStatusColor(widget.project.status),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  widget.project.status,
+                                  style: TextStyle(
+                                    color: AppTheme.getStatusColor(widget.project.status),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(height: 8),
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: AppTheme.getCategoryColor(widget.project.category).withOpacity(0.2),
+                      child: Text(
+                        '${widget.project.srNo}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.getCategoryColor(widget.project.category),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  // Navigation Items
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      children: List.generate(_tabs.length, (index) {
+                        final tab = _tabs[index];
+                        return _buildDrawerItem(
+                          icon: tab['icon'],
+                          label: tab['title'],
+                          isSelected: _selectedIndex == index,
+                          isExpanded: _isDrawerExpanded,
+                          tooltip: tab['tooltip'],
+                          onTap: () {
+                            setState(() {
+                              _selectedIndex = index;
+                            });
+                          },
+                        );
+                      }),
+                    ),
+                  ),
                 ],
               ),
             ),

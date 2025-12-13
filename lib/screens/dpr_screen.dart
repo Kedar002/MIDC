@@ -250,125 +250,67 @@ class _DPRScreenState extends State<DPRScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade200),
-            ),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.description, color: AppTheme.primaryBlue),
-              const SizedBox(width: 8),
-              const Text(
-                'Detailed Project Report (DPR)',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              if (!_isEditing)
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _isEditing = true;
-                    });
-                  },
-                  icon: const Icon(Icons.edit, size: 18),
-                  label: const Text('Edit'),
-                ),
-              if (_isEditing) ...[
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _dprData = widget.project.dprData ?? DPRData();
-                      _broadScopeController.text = _dprData.broadScope ?? '';
-                      _isEditing = false;
-                    });
-                  },
-                  icon: const Icon(Icons.cancel, size: 18),
-                  label: const Text('Cancel'),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton.icon(
-                  onPressed: _saveChanges,
-                  icon: const Icon(Icons.save, size: 18),
-                  label: const Text('Save'),
-                ),
-              ],
-            ],
-          ),
-        ),
-        Expanded(
-          child: GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 300,
-              mainAxisExtent: 140,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemCount: AppConstants.dprFields.length,
-            itemBuilder: (context, index) {
-              final fieldInfo = AppConstants.dprFields[index];
-              final fieldName = _getFieldNameFromIndex(index);
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 300,
+        mainAxisExtent: 140,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: AppConstants.dprFields.length,
+      itemBuilder: (context, index) {
+        final fieldInfo = AppConstants.dprFields[index];
+        final fieldName = _getFieldNameFromIndex(index);
 
-              // Special handling for Broad Scope field
-              if (fieldName == 'broadScope') {
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Broad Scope of Work',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Responsible: Engineering',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppTheme.textHint,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Expanded(
-                          child: TextField(
-                            controller: _broadScopeController,
-                            enabled: _isEditing,
-                            maxLines: null,
-                            expands: true,
-                            textAlignVertical: TextAlignVertical.top,
-                            decoration: InputDecoration(
-                              hintText: 'Enter broad scope of work...',
-                              filled: true,
-                              fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
-                            ),
-                          ),
-                        ),
-                      ],
+        // Special handling for Broad Scope field
+        if (fieldName == 'broadScope') {
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Broad Scope of Work',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
                     ),
                   ),
-                );
-              }
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Responsible: Engineering',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppTheme.textHint,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _broadScopeController,
+                      enabled: _isEditing,
+                      maxLines: null,
+                      expands: true,
+                      textAlignVertical: TextAlignVertical.top,
+                      decoration: InputDecoration(
+                        hintText: 'Enter broad scope of work...',
+                        filled: true,
+                        fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
 
-              return _buildDateField(fieldName, fieldInfo);
-            },
-          ),
-        ),
-      ],
+        return _buildDateField(fieldName, fieldInfo);
+      },
     );
   }
 

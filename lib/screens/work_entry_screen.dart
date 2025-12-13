@@ -99,65 +99,10 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade200),
-            ),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.edit_note, color: AppTheme.primaryBlue),
-              const SizedBox(width: 8),
-              const Text(
-                'Work Entry Details',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              if (!_isEditing)
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _isEditing = true;
-                    });
-                  },
-                  icon: const Icon(Icons.edit, size: 18),
-                  label: const Text('Edit'),
-                ),
-              if (_isEditing) ...[
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _initializeActivities();
-                      _isEditing = false;
-                      _expandedIndex = null;
-                    });
-                  },
-                  icon: const Icon(Icons.cancel, size: 18),
-                  label: const Text('Cancel'),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton.icon(
-                  onPressed: _saveChanges,
-                  icon: const Icon(Icons.save, size: 18),
-                  label: const Text('Save'),
-                ),
-              ],
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: _activities.length,
-            itemBuilder: (context, index) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _activities.length,
+      itemBuilder: (context, index) {
               final activity = _activities[index];
               final isExpanded = _expandedIndex == index;
               final statusColor = _getActivityStatusColor(activity);
@@ -426,9 +371,6 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
                 ),
               );
             },
-          ),
-        ),
-      ],
-    );
+          );
   }
 }

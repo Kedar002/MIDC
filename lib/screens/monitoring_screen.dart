@@ -352,71 +352,16 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade200),
-            ),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.analytics, color: AppTheme.primaryBlue),
-              const SizedBox(width: 8),
-              const Text(
-                'Project Monitoring',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              if (!_isEditing)
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _isEditing = true;
-                    });
-                  },
-                  icon: const Icon(Icons.edit, size: 18),
-                  label: const Text('Edit'),
-                ),
-              if (_isEditing) ...[
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _monitoringData = widget.project.monitoringData ?? MonitoringData();
-                      _initializeControllers();
-                      _isEditing = false;
-                    });
-                  },
-                  icon: const Icon(Icons.cancel, size: 18),
-                  label: const Text('Cancel'),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton.icon(
-                  onPressed: _saveChanges,
-                  icon: const Icon(Icons.save, size: 18),
-                  label: const Text('Save'),
-                ),
-              ],
-            ],
-          ),
-        ),
-        Expanded(
-          child: GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 300,
-              mainAxisExtent: 160,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemCount: 17,
-            itemBuilder: (context, index) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 300,
+        mainAxisExtent: 160,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: 17,
+      itemBuilder: (context, index) {
               // Financial Information (0-4)
               if (index == 0) {
                 return _buildTextField(
@@ -548,9 +493,6 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 
               return const SizedBox.shrink();
             },
-          ),
-        ),
-      ],
-    );
+          );
   }
 }
