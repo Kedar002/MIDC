@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../models/project.dart';
 import '../models/dpr_data.dart';
-import '../utils/constants.dart';
 import '../theme/app_theme.dart';
 import '../services/data_service.dart';
 
@@ -22,140 +22,50 @@ class DPRScreenState extends State<DPRScreen> {
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
   bool isEditing = false;
   final TextEditingController broadScopeController = TextEditingController();
+  final TextEditingController successfulBidderController = TextEditingController();
+  final TextEditingController loaDelayReasonsController = TextEditingController();
+  final TextEditingController surveyDelayReasonsController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     dprData = widget.project.dprData ?? DPRData();
     broadScopeController.text = dprData.broadScope ?? '';
+    successfulBidderController.text = dprData.successfulBidderName ?? '';
+    loaDelayReasonsController.text = dprData.loaDelayReasons ?? '';
+    surveyDelayReasonsController.text = dprData.surveyDelayReasons ?? '';
   }
 
   @override
   void dispose() {
     broadScopeController.dispose();
+    successfulBidderController.dispose();
+    loaDelayReasonsController.dispose();
+    surveyDelayReasonsController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectDate(BuildContext context, String fieldName) async {
-    final initialDate = _getDateForField(fieldName) ?? DateTime.now();
+  Future<void> _selectDate(BuildContext context, Function(DateTime) onDateSelected) async {
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: initialDate,
+      initialDate: DateTime.now(),
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      lastDate: DateTime(2035),
     );
 
     if (pickedDate != null) {
       setState(() {
-        _setDateForField(fieldName, pickedDate);
+        onDateSelected(pickedDate);
       });
-    }
-  }
-
-  DateTime? _getDateForField(String field) {
-    switch (field) {
-      case 'bidDocDPR':
-        return dprData.bidDocDPR;
-      case 'tenderInvite':
-        return dprData.tenderInvite;
-      case 'prebid':
-        return dprData.prebid;
-      case 'csd':
-        return dprData.csd;
-      case 'bidSubmit':
-        return dprData.bidSubmit;
-      case 'workOrder':
-        return dprData.workOrder;
-      case 'inceptionReport':
-        return dprData.inceptionReport;
-      case 'survey':
-        return dprData.survey;
-      case 'alignmentLayout':
-        return dprData.alignmentLayout;
-      case 'draftDPR':
-        return dprData.draftDPR;
-      case 'drawings':
-        return dprData.drawings;
-      case 'boq':
-        return dprData.boq;
-      case 'envClearance':
-        return dprData.envClearance;
-      case 'cashFlow':
-        return dprData.cashFlow;
-      case 'laProposal':
-        return dprData.laProposal;
-      case 'utilityShifting':
-        return dprData.utilityShifting;
-      case 'finalDPR':
-        return dprData.finalDPR;
-      case 'bidDocWork':
-        return dprData.bidDocWork;
-      default:
-        return null;
-    }
-  }
-
-  void _setDateForField(String field, DateTime date) {
-    switch (field) {
-      case 'bidDocDPR':
-        dprData.bidDocDPR = date;
-        break;
-      case 'tenderInvite':
-        dprData.tenderInvite = date;
-        break;
-      case 'prebid':
-        dprData.prebid = date;
-        break;
-      case 'csd':
-        dprData.csd = date;
-        break;
-      case 'bidSubmit':
-        dprData.bidSubmit = date;
-        break;
-      case 'workOrder':
-        dprData.workOrder = date;
-        break;
-      case 'inceptionReport':
-        dprData.inceptionReport = date;
-        break;
-      case 'survey':
-        dprData.survey = date;
-        break;
-      case 'alignmentLayout':
-        dprData.alignmentLayout = date;
-        break;
-      case 'draftDPR':
-        dprData.draftDPR = date;
-        break;
-      case 'drawings':
-        dprData.drawings = date;
-        break;
-      case 'boq':
-        dprData.boq = date;
-        break;
-      case 'envClearance':
-        dprData.envClearance = date;
-        break;
-      case 'cashFlow':
-        dprData.cashFlow = date;
-        break;
-      case 'laProposal':
-        dprData.laProposal = date;
-        break;
-      case 'utilityShifting':
-        dprData.utilityShifting = date;
-        break;
-      case 'finalDPR':
-        dprData.finalDPR = date;
-        break;
-      case 'bidDocWork':
-        dprData.bidDocWork = date;
-        break;
     }
   }
 
   void saveChanges() {
     dprData.broadScope = broadScopeController.text.isNotEmpty ? broadScopeController.text : null;
+    dprData.successfulBidderName = successfulBidderController.text.isNotEmpty ? successfulBidderController.text : null;
+    dprData.loaDelayReasons = loaDelayReasonsController.text.isNotEmpty ? loaDelayReasonsController.text : null;
+    dprData.surveyDelayReasons = surveyDelayReasonsController.text.isNotEmpty ? surveyDelayReasonsController.text : null;
+
     widget.project.dprData = dprData;
     context.read<DataService>().updateProject(widget.project);
     setState(() {
@@ -169,79 +79,63 @@ class DPRScreenState extends State<DPRScreen> {
     );
   }
 
-  Widget _buildDateField(String fieldName, Map<String, String> fieldInfo) {
-    final date = _getDateForField(fieldName);
-    final dateString = date != null ? _dateFormat.format(date) : 'Not set';
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: AppTheme.primaryBlue,
+        ),
+      ),
+    );
+  }
 
+  Widget _buildRadioStatusField({
+    required String label,
+    required WorkflowStatus? value,
+    required Function(WorkflowStatus?) onChanged,
+  }) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    fieldInfo['label']!,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
-                    ),
-                  ),
-                ),
-                if (isEditing)
-                  IconButton(
-                    icon: const Icon(Icons.calendar_today, size: 18),
-                    onPressed: () => _selectDate(context, fieldName),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 4),
             Text(
-              'Responsible: ${fieldInfo['responsiblePerson']}',
+              label,
               style: const TextStyle(
-                fontSize: 11,
-                color: AppTheme.textHint,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: date != null
-                    ? AppTheme.statusCompleted.withOpacity(0.1)
-                    : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: date != null
-                      ? AppTheme.statusCompleted.withOpacity(0.3)
-                      : Colors.grey.shade300,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    date != null ? Icons.check_circle : Icons.radio_button_unchecked,
-                    size: 16,
-                    color: date != null ? AppTheme.statusCompleted : Colors.grey,
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 16,
+              runSpacing: 8,
+              children: WorkflowStatus.values.map((status) {
+                return InkWell(
+                  onTap: isEditing ? () => onChanged(status) : null,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Radio<WorkflowStatus>(
+                        value: status,
+                        groupValue: value,
+                        onChanged: isEditing ? onChanged : null,
+                      ),
+                      Text(
+                        status.displayName,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    dateString,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: date != null ? AppTheme.textPrimary : AppTheme.textHint,
-                      fontWeight: date != null ? FontWeight.w500 : FontWeight.normal,
-                    ),
-                  ),
-                ],
-              ),
+                );
+              }).toList(),
             ),
           ],
         ),
@@ -249,125 +143,813 @@ class DPRScreenState extends State<DPRScreen> {
     );
   }
 
-  bool _matchesSearch(Map<String, String> fieldInfo) {
-    if (widget.searchQuery.isEmpty) return true;
-    final query = widget.searchQuery.toLowerCase();
-    return fieldInfo['label']!.toLowerCase().contains(query) ||
-        (fieldInfo['responsiblePerson']?.toLowerCase().contains(query) ?? false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final filteredFields = <int>[];
-    for (int i = 0; i < AppConstants.dprFields.length; i++) {
-      if (_matchesSearch(AppConstants.dprFields[i])) {
-        filteredFields.add(i);
-      }
-    }
-
-    if (filteredFields.isEmpty && widget.searchQuery.isNotEmpty) {
-      return Center(
+  Widget _buildRadioStatusWithDateField({
+    required String label,
+    required WorkflowStatus? status,
+    required Function(WorkflowStatus?) onStatusChanged,
+    required DateTime? date,
+    required Function(DateTime) onDateChanged,
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
             Text(
-              'No results found for "${widget.searchQuery}"',
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
             ),
-          ],
-        ),
-      );
-    }
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 300,
-        mainAxisExtent: 140,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-      ),
-      itemCount: filteredFields.length,
-      itemBuilder: (context, idx) {
-        final index = filteredFields[idx];
-        final fieldInfo = AppConstants.dprFields[index];
-        final fieldName = _getFieldNameFromIndex(index);
-
-        // Special handling for Broad Scope field
-        if (fieldName == 'broadScope') {
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 16,
+              runSpacing: 8,
+              children: WorkflowStatus.values.map((s) {
+                return InkWell(
+                  onTap: isEditing ? () => onStatusChanged(s) : null,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Radio<WorkflowStatus>(
+                        value: s,
+                        groupValue: status,
+                        onChanged: isEditing ? onStatusChanged : null,
+                      ),
+                      Text(
+                        s.displayName,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+            if (status != WorkflowStatus.notStarted) ...[
+              const SizedBox(height: 12),
+              const Divider(),
+              const SizedBox(height: 8),
+              Row(
                 children: [
                   const Text(
-                    'Broad Scope of Work',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
-                    ),
+                    'Date:',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Responsible: Engineering',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppTheme.textHint,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: TextField(
-                      controller: broadScopeController,
-                      enabled: isEditing,
-                      maxLines: null,
-                      expands: true,
-                      textAlignVertical: TextAlignVertical.top,
-                      decoration: InputDecoration(
-                        hintText: 'Enter broad scope of work...',
-                        filled: true,
-                        fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+                    child: InkWell(
+                      onTap: isEditing ? () => _selectDate(context, onDateChanged) : null,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                          color: isEditing ? Colors.white : Colors.grey.shade100,
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.calendar_today, size: 16),
+                            const SizedBox(width: 8),
+                            Text(
+                              date != null ? _dateFormat.format(date) : 'Select date',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: date != null ? AppTheme.textPrimary : AppTheme.textHint,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-          );
-        }
-
-        return _buildDateField(fieldName, fieldInfo);
-      },
+            ],
+          ],
+        ),
+      ),
     );
   }
 
-  String _getFieldNameFromIndex(int index) {
-    const fieldNames = [
-      'broadScope',
-      'bidDocDPR',
-      'tenderInvite',
-      'prebid',
-      'csd',
-      'bidSubmit',
-      'workOrder',
-      'inceptionReport',
-      'survey',
-      'alignmentLayout',
-      'draftDPR',
-      'drawings',
-      'boq',
-      'envClearance',
-      'cashFlow',
-      'laProposal',
-      'utilityShifting',
-      'finalDPR',
-      'bidDocWork',
-    ];
-    return fieldNames[index];
+  Widget _buildDateField({
+    required String label,
+    required DateTime? date,
+    required Function(DateTime) onDateChanged,
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: isEditing ? () => _selectDate(context, onDateChanged) : null,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8),
+                  color: isEditing ? Colors.white : Colors.grey.shade100,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.calendar_today, size: 16),
+                    const SizedBox(width: 8),
+                    Text(
+                      date != null ? _dateFormat.format(date) : 'Select date',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: date != null ? AppTheme.textPrimary : AppTheme.textHint,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNumberField({
+    required String label,
+    required int? value,
+    required Function(int?) onChanged,
+    String? hint,
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              enabled: isEditing,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              controller: TextEditingController(text: value?.toString() ?? ''),
+              decoration: InputDecoration(
+                hintText: hint ?? 'Enter number',
+                filled: true,
+                fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              ),
+              onChanged: (val) {
+                onChanged(int.tryParse(val));
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    String? hint,
+    int maxLines = 1,
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              enabled: isEditing,
+              controller: controller,
+              maxLines: maxLines,
+              decoration: InputDecoration(
+                hintText: hint ?? 'Enter text',
+                filled: true,
+                fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStructureField({
+    required String label,
+    required int? nos,
+    required Function(int?) onNosChanged,
+    required WorkflowStatus? status,
+    required Function(WorkflowStatus?) onStatusChanged,
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    enabled: isEditing,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    controller: TextEditingController(text: nos?.toString() ?? ''),
+                    decoration: InputDecoration(
+                      labelText: 'Nos.',
+                      filled: true,
+                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    onChanged: (val) {
+                      onNosChanged(int.tryParse(val));
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 16,
+              runSpacing: 8,
+              children: WorkflowStatus.values.map((s) {
+                return InkWell(
+                  onTap: isEditing ? () => onStatusChanged(s) : null,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Radio<WorkflowStatus>(
+                        value: s,
+                        groupValue: status,
+                        onChanged: isEditing ? onStatusChanged : null,
+                      ),
+                      Text(
+                        s.displayName,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPBGField() {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Performance Bank Guarantee (PBG)',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Text('Date:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: InkWell(
+                    onTap: isEditing ? () => _selectDate(context, (date) => dprData.pbgDate = date) : null,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                        color: isEditing ? Colors.white : Colors.grey.shade100,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_today, size: 16),
+                          const SizedBox(width: 8),
+                          Text(
+                            dprData.pbgDate != null ? _dateFormat.format(dprData.pbgDate!) : 'Select date',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: dprData.pbgDate != null ? AppTheme.textPrimary : AppTheme.textHint,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    enabled: isEditing,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    controller: TextEditingController(text: dprData.pbgAmount?.toString() ?? ''),
+                    decoration: InputDecoration(
+                      labelText: 'Amount',
+                      filled: true,
+                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    onChanged: (val) {
+                      setState(() {
+                        dprData.pbgAmount = double.tryParse(val);
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    enabled: isEditing,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    controller: TextEditingController(text: dprData.pbgPeriodDays?.toString() ?? ''),
+                    decoration: InputDecoration(
+                      labelText: 'Period (Days)',
+                      filled: true,
+                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    onChanged: (val) {
+                      setState(() {
+                        dprData.pbgPeriodDays = int.tryParse(val);
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool _matchesSearch(String text) {
+    if (widget.searchQuery.isEmpty) return true;
+    final query = widget.searchQuery.toLowerCase();
+    return text.toLowerCase().contains(query);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // 1. Broad Scope of Work
+        if (_matchesSearch('Broad Scope of Work'))
+          _buildTextField(
+            label: 'Broad Scope of Work (Max 500 words)',
+            controller: broadScopeController,
+            hint: 'Enter broad scope of work...',
+            maxLines: 5,
+          ),
+
+        // 2. Bid Document for DPR
+        if (_matchesSearch('Bid Document for DPR'))
+          _buildRadioStatusWithDateField(
+            label: 'Bid Document for DPR',
+            status: dprData.bidDocDPRStatus,
+            onStatusChanged: (status) => setState(() => dprData.bidDocDPRStatus = status),
+            date: dprData.bidDocDPRDate,
+            onDateChanged: (date) => dprData.bidDocDPRDate = date,
+          ),
+
+        // 3. Tender Invite
+        if (_matchesSearch('Tender Invite'))
+          _buildDateField(
+            label: 'Tender Invite',
+            date: dprData.tenderInviteDate,
+            onDateChanged: (date) => dprData.tenderInviteDate = date,
+          ),
+
+        // 4. No. of qualified bidders
+        if (_matchesSearch('No. of qualified bidders'))
+          _buildNumberField(
+            label: 'No. of qualified bidders',
+            value: dprData.qualifiedBidders,
+            onChanged: (val) => setState(() => dprData.qualifiedBidders = val),
+          ),
+
+        // 5. Successful bidder name
+        if (_matchesSearch('Successful bidder name'))
+          _buildTextField(
+            label: 'Successful bidder name',
+            controller: successfulBidderController,
+            hint: 'Enter successful bidder name',
+          ),
+
+        // 6. Prebid Meeting
+        if (_matchesSearch('Prebid Meeting'))
+          _buildRadioStatusWithDateField(
+            label: 'Prebid Meeting',
+            status: dprData.prebidStatus,
+            onStatusChanged: (status) => setState(() => dprData.prebidStatus = status),
+            date: dprData.prebidDate,
+            onDateChanged: (date) => dprData.prebidDate = date,
+          ),
+
+        // 7. CSD Date
+        if (_matchesSearch('CSD'))
+          _buildDateField(
+            label: 'CSD',
+            date: dprData.csdDate,
+            onDateChanged: (date) => dprData.csdDate = date,
+          ),
+
+        // 8. Bid Submit
+        if (_matchesSearch('Bid Submit'))
+          _buildDateField(
+            label: 'Bid Submit',
+            date: dprData.bidSubmitDate,
+            onDateChanged: (date) => dprData.bidSubmitDate = date,
+          ),
+
+        // 9. Financial Bid Opening
+        if (_matchesSearch('Financial Bid Opening'))
+          _buildDateField(
+            label: 'Financial Bid Opening',
+            date: dprData.finBidDate,
+            onDateChanged: (date) => dprData.finBidDate = date,
+          ),
+
+        // 10. LOI
+        if (_matchesSearch('LOI'))
+          _buildRadioStatusWithDateField(
+            label: 'LOI (Letter of Intent)',
+            status: dprData.loiStatus,
+            onStatusChanged: (status) => setState(() => dprData.loiStatus = status),
+            date: dprData.loiDate,
+            onDateChanged: (date) => dprData.loiDate = date,
+          ),
+
+        // 11. LOA with conditional delay reasons
+        if (_matchesSearch('LOA')) ...[
+          _buildRadioStatusWithDateField(
+            label: 'LOA (Letter of Acceptance)',
+            status: dprData.loaStatus,
+            onStatusChanged: (status) => setState(() => dprData.loaStatus = status),
+            date: dprData.loaDate,
+            onDateChanged: (date) => dprData.loaDate = date,
+          ),
+          if (dprData.loaStatus == WorkflowStatus.inProgress)
+            _buildTextField(
+              label: 'Reasons for delay in LOA',
+              controller: loaDelayReasonsController,
+              hint: 'Enter reasons for delay',
+              maxLines: 3,
+            ),
+        ],
+
+        // 12. PBG
+        if (_matchesSearch('PBG') || _matchesSearch('Performance Bank Guarantee'))
+          _buildPBGField(),
+
+        // 13. Agreement
+        if (_matchesSearch('Agreement'))
+          _buildRadioStatusWithDateField(
+            label: 'Agreement',
+            status: dprData.agreementStatus,
+            onStatusChanged: (status) => setState(() => dprData.agreementStatus = status),
+            date: dprData.agreementDate,
+            onDateChanged: (date) => dprData.agreementDate = date,
+          ),
+
+        // 14. Work Order
+        if (_matchesSearch('Work Order'))
+          _buildRadioStatusWithDateField(
+            label: 'Work Order',
+            status: dprData.workOrderStatus,
+            onStatusChanged: (status) => setState(() => dprData.workOrderStatus = status),
+            date: dprData.workOrderDate,
+            onDateChanged: (date) => dprData.workOrderDate = date,
+          ),
+
+        // DPR Preparation Section
+        if (_matchesSearch('DPR') || _matchesSearch('Inception') || _matchesSearch('Survey') ||
+            _matchesSearch('Alignment') || _matchesSearch('Draft') || _matchesSearch('Drawing') ||
+            _matchesSearch('BOQ') || _matchesSearch('Environmental') || _matchesSearch('Cash Flow') ||
+            _matchesSearch('LA Proposal') || _matchesSearch('Utility'))
+          _buildSectionHeader('DPR Preparation'),
+
+        // 15. Inception Report
+        if (_matchesSearch('Inception Report'))
+          _buildRadioStatusWithDateField(
+            label: 'Inception Report',
+            status: dprData.inceptionReportStatus,
+            onStatusChanged: (status) => setState(() => dprData.inceptionReportStatus = status),
+            date: dprData.inceptionReportDate,
+            onDateChanged: (date) => dprData.inceptionReportDate = date,
+          ),
+
+        // 16. Survey with conditional delay reasons
+        if (_matchesSearch('Survey')) ...[
+          _buildRadioStatusWithDateField(
+            label: 'Survey',
+            status: dprData.surveyStatus,
+            onStatusChanged: (status) => setState(() => dprData.surveyStatus = status),
+            date: dprData.surveyDate,
+            onDateChanged: (date) => dprData.surveyDate = date,
+          ),
+          if (dprData.surveyStatus == WorkflowStatus.inProgress)
+            _buildTextField(
+              label: 'Reasons for delay in Survey',
+              controller: surveyDelayReasonsController,
+              hint: 'Enter reasons for delay',
+              maxLines: 3,
+            ),
+        ],
+
+        // 17. Alignment & Layout
+        if (_matchesSearch('Alignment') || _matchesSearch('Layout'))
+          _buildRadioStatusWithDateField(
+            label: 'Alignment & Layout',
+            status: dprData.alignmentLayoutStatus,
+            onStatusChanged: (status) => setState(() => dprData.alignmentLayoutStatus = status),
+            date: dprData.alignmentLayoutDate,
+            onDateChanged: (date) => dprData.alignmentLayoutDate = date,
+          ),
+
+        // 18. Draft DPR
+        if (_matchesSearch('Draft DPR'))
+          _buildRadioStatusWithDateField(
+            label: 'Draft DPR',
+            status: dprData.draftDPRStatus,
+            onStatusChanged: (status) => setState(() => dprData.draftDPRStatus = status),
+            date: dprData.draftDPRDate,
+            onDateChanged: (date) => dprData.draftDPRDate = date,
+          ),
+
+        // 19. Drawings
+        if (_matchesSearch('Drawings'))
+          _buildRadioStatusWithDateField(
+            label: 'Drawings',
+            status: dprData.drawingsStatus,
+            onStatusChanged: (status) => setState(() => dprData.drawingsStatus = status),
+            date: dprData.drawingsDate,
+            onDateChanged: (date) => dprData.drawingsDate = date,
+          ),
+
+        // 20. BOQ
+        if (_matchesSearch('BOQ'))
+          _buildRadioStatusWithDateField(
+            label: 'BOQ (Bill of Quantities)',
+            status: dprData.boqStatus,
+            onStatusChanged: (status) => setState(() => dprData.boqStatus = status),
+            date: dprData.boqDate,
+            onDateChanged: (date) => dprData.boqDate = date,
+          ),
+
+        // 21. Environmental Clearance
+        if (_matchesSearch('Environmental') || _matchesSearch('Clearance'))
+          _buildRadioStatusWithDateField(
+            label: 'Environmental Clearance',
+            status: dprData.envClearanceStatus,
+            onStatusChanged: (status) => setState(() => dprData.envClearanceStatus = status),
+            date: dprData.envClearanceDate,
+            onDateChanged: (date) => dprData.envClearanceDate = date,
+          ),
+
+        // 22. Cash Flow
+        if (_matchesSearch('Cash Flow'))
+          _buildRadioStatusWithDateField(
+            label: 'Cash Flow',
+            status: dprData.cashFlowStatus,
+            onStatusChanged: (status) => setState(() => dprData.cashFlowStatus = status),
+            date: dprData.cashFlowDate,
+            onDateChanged: (date) => dprData.cashFlowDate = date,
+          ),
+
+        // 23. LA Proposal
+        if (_matchesSearch('LA Proposal'))
+          _buildRadioStatusWithDateField(
+            label: 'LA Proposal',
+            status: dprData.laProposalStatus,
+            onStatusChanged: (status) => setState(() => dprData.laProposalStatus = status),
+            date: dprData.laProposalDate,
+            onDateChanged: (date) => dprData.laProposalDate = date,
+          ),
+
+        // 24. Utility Shifting
+        if (_matchesSearch('Utility Shifting'))
+          _buildRadioStatusWithDateField(
+            label: 'Utility Shifting',
+            status: dprData.utilityShiftingStatus,
+            onStatusChanged: (status) => setState(() => dprData.utilityShiftingStatus = status),
+            date: dprData.utilityShiftingDate,
+            onDateChanged: (date) => dprData.utilityShiftingDate = date,
+          ),
+
+        // 25. Final DPR
+        if (_matchesSearch('Final DPR'))
+          _buildRadioStatusWithDateField(
+            label: 'Final DPR',
+            status: dprData.finalDPRStatus,
+            onStatusChanged: (status) => setState(() => dprData.finalDPRStatus = status),
+            date: dprData.finalDPRDate,
+            onDateChanged: (date) => dprData.finalDPRDate = date,
+          ),
+
+        // 26. Bid Document for Work
+        if (_matchesSearch('Bid Document for Work'))
+          _buildRadioStatusWithDateField(
+            label: 'Bid Document for Work',
+            status: dprData.bidDocWorkStatus,
+            onStatusChanged: (status) => setState(() => dprData.bidDocWorkStatus = status),
+            date: dprData.bidDocWorkDate,
+            onDateChanged: (date) => dprData.bidDocWorkDate = date,
+          ),
+
+        // Structures Section
+        if (_matchesSearch('Structure') || _matchesSearch('HPC') || _matchesSearch('Bridge') ||
+            _matchesSearch('Culvert') || _matchesSearch('VUP') || _matchesSearch('ROR') ||
+            _matchesSearch('Cause'))
+          _buildSectionHeader('Structures'),
+
+        // 27. Structure Tracking
+        if (_matchesSearch('HPC'))
+          _buildStructureField(
+            label: 'HPC (High Priority Corridor)',
+            nos: dprData.hpcNos,
+            onNosChanged: (val) => setState(() => dprData.hpcNos = val),
+            status: dprData.hpcStatus,
+            onStatusChanged: (status) => setState(() => dprData.hpcStatus = status),
+          ),
+
+        if (_matchesSearch('Bridge'))
+          _buildStructureField(
+            label: 'Bridges',
+            nos: dprData.bridgesNos,
+            onNosChanged: (val) => setState(() => dprData.bridgesNos = val),
+            status: dprData.bridgesStatus,
+            onStatusChanged: (status) => setState(() => dprData.bridgesStatus = status),
+          ),
+
+        if (_matchesSearch('Culvert'))
+          _buildStructureField(
+            label: 'Culverts',
+            nos: dprData.culvertsNos,
+            onNosChanged: (val) => setState(() => dprData.culvertsNos = val),
+            status: dprData.culvertsStatus,
+            onStatusChanged: (status) => setState(() => dprData.culvertsStatus = status),
+          ),
+
+        if (_matchesSearch('VUP'))
+          _buildStructureField(
+            label: 'VUP (Vehicular Under Pass)',
+            nos: dprData.vupNos,
+            onNosChanged: (val) => setState(() => dprData.vupNos = val),
+            status: dprData.vupStatus,
+            onStatusChanged: (status) => setState(() => dprData.vupStatus = status),
+          ),
+
+        if (_matchesSearch('ROR'))
+          _buildStructureField(
+            label: 'ROR (Road Over Rail)',
+            nos: dprData.rorNos,
+            onNosChanged: (val) => setState(() => dprData.rorNos = val),
+            status: dprData.rorStatus,
+            onStatusChanged: (status) => setState(() => dprData.rorStatus = status),
+          ),
+
+        if (_matchesSearch('Minor Bridge'))
+          _buildStructureField(
+            label: 'Minor Bridges',
+            nos: dprData.minorBridgesNos,
+            onNosChanged: (val) => setState(() => dprData.minorBridgesNos = val),
+            status: dprData.minorBridgesStatus,
+            onStatusChanged: (status) => setState(() => dprData.minorBridgesStatus = status),
+          ),
+
+        if (_matchesSearch('Cause') || _matchesSearch('Way'))
+          _buildStructureField(
+            label: 'Cause Way',
+            nos: dprData.causeWayNos,
+            onNosChanged: (val) => setState(() => dprData.causeWayNos = val),
+            status: dprData.causeWayStatus,
+            onStatusChanged: (status) => setState(() => dprData.causeWayStatus = status),
+          ),
+
+        // 28. Flyover
+        if (_matchesSearch('Flyover'))
+          Card(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Flyover',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    enabled: isEditing,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    controller: TextEditingController(text: dprData.flyoverLengthMeters?.toString() ?? ''),
+                    decoration: InputDecoration(
+                      labelText: 'Length (meters)',
+                      filled: true,
+                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    onChanged: (val) {
+                      setState(() {
+                        dprData.flyoverLengthMeters = double.tryParse(val);
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 16,
+                    runSpacing: 8,
+                    children: WorkflowStatus.values.map((s) {
+                      return InkWell(
+                        onTap: isEditing ? () => setState(() => dprData.flyoverStatus = s) : null,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Radio<WorkflowStatus>(
+                              value: s,
+                              groupValue: dprData.flyoverStatus,
+                              onChanged: isEditing ? (status) => setState(() => dprData.flyoverStatus = status) : null,
+                            ),
+                            Text(
+                              s.displayName,
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+        const SizedBox(height: 24),
+      ],
+    );
   }
 }
