@@ -172,7 +172,10 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     String? tooltip,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: EdgeInsets.symmetric(
+        horizontal: isExpanded ? 8 : 4,
+        vertical: 2,
+      ),
       child: Material(
         color: isSelected ? AppTheme.primaryBlue : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
@@ -182,8 +185,13 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
           child: Tooltip(
             message: tooltip ?? label,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(
+                horizontal: isExpanded ? 16 : 8,
+                vertical: 12,
+              ),
               child: Row(
+                mainAxisSize: isExpanded ? MainAxisSize.max : MainAxisSize.min,
+                mainAxisAlignment: isExpanded ? MainAxisAlignment.start : MainAxisAlignment.center,
                 children: [
                   Icon(
                     icon,
@@ -289,127 +297,163 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                   right: BorderSide(color: Colors.grey.shade300),
                 ),
               ),
-              child: Column(
-                children: [
-                  // Project Info Section
-                  if (_isDrawerExpanded) ...[
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryBlue.withOpacity(0.05),
-                        border: Border(
-                          bottom: BorderSide(color: Colors.grey.shade300),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            radius: 24,
-                            backgroundColor: AppTheme.getCategoryColor(widget.project.category).withOpacity(0.2),
-                            child: Text(
-                              '${widget.project.srNo}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.getCategoryColor(widget.project.category),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            widget.project.name,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.textPrimary,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${widget.project.categoryName} • Category ${widget.project.category}',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: AppTheme.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppTheme.getStatusColor(widget.project.status).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: AppTheme.getStatusColor(widget.project.status),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 6,
-                                  height: 6,
+              child: ClipRect(
+                child: OverflowBox(
+                  alignment: Alignment.topLeft,
+                  maxWidth: _isDrawerExpanded ? 250 : 60,
+                  child: SizedBox(
+                    width: _isDrawerExpanded ? 250 : 60,
+                    child: Column(
+                      children: [
+                        // Project Info Section
+                        AnimatedOpacity(
+                          duration: const Duration(milliseconds: 150),
+                          opacity: _isDrawerExpanded ? 1.0 : 0.0,
+                          child: _isDrawerExpanded
+                              ? Container(
+                                  width: 250,
+                                  padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.getStatusColor(widget.project.status),
-                                    shape: BoxShape.circle,
+                                    color: AppTheme.primaryBlue.withOpacity(0.05),
+                                    border: Border(
+                                      bottom: BorderSide(color: Colors.grey.shade300),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  widget.project.status,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor: AppTheme.getCategoryColor(widget.project.category).withOpacity(0.2),
+                                        child: Text(
+                                          '${widget.project.srNo}',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppTheme.getCategoryColor(widget.project.category),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      ConstrainedBox(
+                                        constraints: const BoxConstraints(maxWidth: 226),
+                                        child: Text(
+                                          widget.project.name,
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppTheme.textPrimary,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      ConstrainedBox(
+                                        constraints: const BoxConstraints(maxWidth: 226),
+                                        child: Text(
+                                          '${widget.project.categoryName} • Cat ${widget.project.category}',
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: AppTheme.textSecondary,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      ConstrainedBox(
+                                        constraints: const BoxConstraints(maxWidth: 200),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.getStatusColor(widget.project.status).withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: AppTheme.getStatusColor(widget.project.status),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Container(
+                                                width: 5,
+                                                height: 5,
+                                                decoration: BoxDecoration(
+                                                  color: AppTheme.getStatusColor(widget.project.status),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Flexible(
+                                                child: Text(
+                                                  widget.project.status,
+                                                  style: TextStyle(
+                                                    color: AppTheme.getStatusColor(widget.project.status),
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                        if (!_isDrawerExpanded)
+                          Container(
+                            width: 60,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Center(
+                              child: CircleAvatar(
+                                radius: 18,
+                                backgroundColor: AppTheme.getCategoryColor(widget.project.category).withOpacity(0.2),
+                                child: Text(
+                                  '${widget.project.srNo}',
                                   style: TextStyle(
-                                    color: AppTheme.getStatusColor(widget.project.status),
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.getCategoryColor(widget.project.category),
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ] else ...[
-                    const SizedBox(height: 8),
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor: AppTheme.getCategoryColor(widget.project.category).withOpacity(0.2),
-                      child: Text(
-                        '${widget.project.srNo}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.getCategoryColor(widget.project.category),
+                        // Navigation Items
+                        Expanded(
+                          child: ListView(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            children: List.generate(_tabs.length, (index) {
+                              final tab = _tabs[index];
+                              return _buildDrawerItem(
+                                icon: tab['icon'],
+                                label: tab['title'],
+                                isSelected: _selectedIndex == index,
+                                isExpanded: _isDrawerExpanded,
+                                tooltip: tab['tooltip'],
+                                onTap: () {
+                                  setState(() {
+                                    _selectedIndex = index;
+                                  });
+                                },
+                              );
+                            }),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  // Navigation Items
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      children: List.generate(_tabs.length, (index) {
-                        final tab = _tabs[index];
-                        return _buildDrawerItem(
-                          icon: tab['icon'],
-                          label: tab['title'],
-                          isSelected: _selectedIndex == index,
-                          isExpanded: _isDrawerExpanded,
-                          tooltip: tab['tooltip'],
-                          onTap: () {
-                            setState(() {
-                              _selectedIndex = index;
-                            });
-                          },
-                        );
-                      }),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ),
