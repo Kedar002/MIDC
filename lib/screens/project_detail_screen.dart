@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/project.dart';
+import '../models/dpr_data.dart';
+import '../models/work_data.dart';
+import '../models/monitoring_data.dart';
 import '../theme/app_theme.dart';
 import 'dpr_screen.dart';
 import 'work_screen.dart';
@@ -19,6 +22,12 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   int _selectedIndex = 1; // Start with Work tab (index 1)
   bool _isDrawerExpanded = false;
   bool _isDrawerPinned = false;
+
+  // GlobalKeys for accessing child screen states
+  final GlobalKey<DPRScreenState> _dprKey = GlobalKey();
+  final GlobalKey<WorkScreenState> _workKey = GlobalKey();
+  final GlobalKey<MonitoringScreenState> _monitoringKey = GlobalKey();
+  final GlobalKey<WorkEntryScreenState> _workEntryKey = GlobalKey();
 
   final List<Map<String, dynamic>> _tabs = [
     {
@@ -43,18 +52,114 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     },
   ];
 
+  bool _isCurrentScreenEditing() {
+    switch (_selectedIndex) {
+      case 0:
+        return _dprKey.currentState?.isEditing ?? false;
+      case 1:
+        return _workKey.currentState?.isEditing ?? false;
+      case 2:
+        return _monitoringKey.currentState?.isEditing ?? false;
+      case 3:
+        return _workEntryKey.currentState?.isEditing ?? false;
+      default:
+        return false;
+    }
+  }
+
+  void _toggleEdit() {
+    setState(() {
+      switch (_selectedIndex) {
+        case 0:
+          _dprKey.currentState?.setState(() {
+            _dprKey.currentState!.isEditing = !_dprKey.currentState!.isEditing;
+          });
+          break;
+        case 1:
+          _workKey.currentState?.setState(() {
+            _workKey.currentState!.isEditing = !_workKey.currentState!.isEditing;
+          });
+          break;
+        case 2:
+          _monitoringKey.currentState?.setState(() {
+            _monitoringKey.currentState!.isEditing = !_monitoringKey.currentState!.isEditing;
+          });
+          break;
+        case 3:
+          _workEntryKey.currentState?.setState(() {
+            _workEntryKey.currentState!.isEditing = !_workEntryKey.currentState!.isEditing;
+          });
+          break;
+      }
+    });
+  }
+
+  void _saveChanges() {
+    switch (_selectedIndex) {
+      case 0:
+        _dprKey.currentState?.saveChanges();
+        break;
+      case 1:
+        _workKey.currentState?.saveChanges();
+        break;
+      case 2:
+        _monitoringKey.currentState?.saveChanges();
+        break;
+      case 3:
+        _workEntryKey.currentState?.saveChanges();
+        break;
+    }
+    setState(() {});
+  }
+
+  void _cancelEdit() {
+    setState(() {
+      switch (_selectedIndex) {
+        case 0:
+          _dprKey.currentState?.setState(() {
+            _dprKey.currentState!.isEditing = false;
+            _dprKey.currentState!.dprData = widget.project.dprData ?? DPRData();
+            _dprKey.currentState!.broadScopeController.text =
+                _dprKey.currentState!.dprData.broadScope ?? '';
+          });
+          break;
+        case 1:
+          _workKey.currentState?.setState(() {
+            _workKey.currentState!.isEditing = false;
+            _workKey.currentState!.workData = widget.project.workData ?? WorkData();
+          });
+          break;
+        case 2:
+          _monitoringKey.currentState?.setState(() {
+            _monitoringKey.currentState!.isEditing = false;
+            _monitoringKey.currentState!.monitoringData =
+                widget.project.monitoringData ?? MonitoringData();
+            _monitoringKey.currentState!.initializeControllers();
+          });
+          break;
+        case 3:
+          _workEntryKey.currentState?.setState(() {
+            _workEntryKey.currentState!.isEditing = false;
+            _workEntryKey.currentState!.expandedIndex = null;
+            _workEntryKey.currentState!.initializeActivities();
+          });
+          break;
+      }
+    });
+  }
+
   Widget _getSelectedScreen() {
     switch (_selectedIndex) {
       case 0:
-        return DPRScreen(project: widget.project);
+        return DPRScreen(key: _dprKey, project: widget.project);
       case 1:
-        return WorkScreen(project: widget.project);
+        return WorkScreen(key: _workKey, project: widget.project);
       case 2:
-        return MonitoringScreen(project: widget.project);
+        return MonitoringScreen(key: _monitoringKey, project: widget.project);
       case 3:
-        return WorkEntryScreen(project: widget.project);
+        return WorkEntryScreen(key: _workEntryKey, project: widget.project);
       default:
-        return WorkScreen(project: widget.project);
+        return WorkScreen(key: _workKey, project: widget.project);
     }
   }
 
@@ -125,6 +230,25 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
           ],
         ),
         actions: [
+          if (!_isCurrentScreenEditing())
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: _toggleEdit,
+              tooltip: 'Edit',
+            ),
+          if (_isCurrentScreenEditing()) ...[
+            IconButton(
+              icon: const Icon(Icons.cancel),
+              onPressed: _cancelEdit,
+              tooltip: 'Cancel',
+            ),
+            IconButton(
+              icon: const Icon(Icons.save),
+              onPressed: _saveChanges,
+              tooltip: 'Save',
+            ),
+          ],
+          const SizedBox(width: 8),
           IconButton(
             icon: Icon(_isDrawerPinned ? Icons.push_pin : Icons.push_pin_outlined),
             onPressed: () {

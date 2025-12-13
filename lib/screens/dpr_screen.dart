@@ -13,25 +13,25 @@ class DPRScreen extends StatefulWidget {
   const DPRScreen({super.key, required this.project});
 
   @override
-  State<DPRScreen> createState() => _DPRScreenState();
+  State<DPRScreen> createState() => DPRScreenState();
 }
 
-class _DPRScreenState extends State<DPRScreen> {
-  late DPRData _dprData;
+class DPRScreenState extends State<DPRScreen> {
+  late DPRData dprData;
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  bool _isEditing = false;
-  final TextEditingController _broadScopeController = TextEditingController();
+  bool isEditing = false;
+  final TextEditingController broadScopeController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _dprData = widget.project.dprData ?? DPRData();
-    _broadScopeController.text = _dprData.broadScope ?? '';
+    dprData = widget.project.dprData ?? DPRData();
+    broadScopeController.text = dprData.broadScope ?? '';
   }
 
   @override
   void dispose() {
-    _broadScopeController.dispose();
+    broadScopeController.dispose();
     super.dispose();
   }
 
@@ -54,41 +54,41 @@ class _DPRScreenState extends State<DPRScreen> {
   DateTime? _getDateForField(String field) {
     switch (field) {
       case 'bidDocDPR':
-        return _dprData.bidDocDPR;
+        return dprData.bidDocDPR;
       case 'tenderInvite':
-        return _dprData.tenderInvite;
+        return dprData.tenderInvite;
       case 'prebid':
-        return _dprData.prebid;
+        return dprData.prebid;
       case 'csd':
-        return _dprData.csd;
+        return dprData.csd;
       case 'bidSubmit':
-        return _dprData.bidSubmit;
+        return dprData.bidSubmit;
       case 'workOrder':
-        return _dprData.workOrder;
+        return dprData.workOrder;
       case 'inceptionReport':
-        return _dprData.inceptionReport;
+        return dprData.inceptionReport;
       case 'survey':
-        return _dprData.survey;
+        return dprData.survey;
       case 'alignmentLayout':
-        return _dprData.alignmentLayout;
+        return dprData.alignmentLayout;
       case 'draftDPR':
-        return _dprData.draftDPR;
+        return dprData.draftDPR;
       case 'drawings':
-        return _dprData.drawings;
+        return dprData.drawings;
       case 'boq':
-        return _dprData.boq;
+        return dprData.boq;
       case 'envClearance':
-        return _dprData.envClearance;
+        return dprData.envClearance;
       case 'cashFlow':
-        return _dprData.cashFlow;
+        return dprData.cashFlow;
       case 'laProposal':
-        return _dprData.laProposal;
+        return dprData.laProposal;
       case 'utilityShifting':
-        return _dprData.utilityShifting;
+        return dprData.utilityShifting;
       case 'finalDPR':
-        return _dprData.finalDPR;
+        return dprData.finalDPR;
       case 'bidDocWork':
-        return _dprData.bidDocWork;
+        return dprData.bidDocWork;
       default:
         return null;
     }
@@ -97,68 +97,68 @@ class _DPRScreenState extends State<DPRScreen> {
   void _setDateForField(String field, DateTime date) {
     switch (field) {
       case 'bidDocDPR':
-        _dprData.bidDocDPR = date;
+        dprData.bidDocDPR = date;
         break;
       case 'tenderInvite':
-        _dprData.tenderInvite = date;
+        dprData.tenderInvite = date;
         break;
       case 'prebid':
-        _dprData.prebid = date;
+        dprData.prebid = date;
         break;
       case 'csd':
-        _dprData.csd = date;
+        dprData.csd = date;
         break;
       case 'bidSubmit':
-        _dprData.bidSubmit = date;
+        dprData.bidSubmit = date;
         break;
       case 'workOrder':
-        _dprData.workOrder = date;
+        dprData.workOrder = date;
         break;
       case 'inceptionReport':
-        _dprData.inceptionReport = date;
+        dprData.inceptionReport = date;
         break;
       case 'survey':
-        _dprData.survey = date;
+        dprData.survey = date;
         break;
       case 'alignmentLayout':
-        _dprData.alignmentLayout = date;
+        dprData.alignmentLayout = date;
         break;
       case 'draftDPR':
-        _dprData.draftDPR = date;
+        dprData.draftDPR = date;
         break;
       case 'drawings':
-        _dprData.drawings = date;
+        dprData.drawings = date;
         break;
       case 'boq':
-        _dprData.boq = date;
+        dprData.boq = date;
         break;
       case 'envClearance':
-        _dprData.envClearance = date;
+        dprData.envClearance = date;
         break;
       case 'cashFlow':
-        _dprData.cashFlow = date;
+        dprData.cashFlow = date;
         break;
       case 'laProposal':
-        _dprData.laProposal = date;
+        dprData.laProposal = date;
         break;
       case 'utilityShifting':
-        _dprData.utilityShifting = date;
+        dprData.utilityShifting = date;
         break;
       case 'finalDPR':
-        _dprData.finalDPR = date;
+        dprData.finalDPR = date;
         break;
       case 'bidDocWork':
-        _dprData.bidDocWork = date;
+        dprData.bidDocWork = date;
         break;
     }
   }
 
-  void _saveChanges() {
-    _dprData.broadScope = _broadScopeController.text.isNotEmpty ? _broadScopeController.text : null;
-    widget.project.dprData = _dprData;
+  void saveChanges() {
+    dprData.broadScope = broadScopeController.text.isNotEmpty ? broadScopeController.text : null;
+    widget.project.dprData = dprData;
     context.read<DataService>().updateProject(widget.project);
     setState(() {
-      _isEditing = false;
+      isEditing = false;
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -191,7 +191,7 @@ class _DPRScreenState extends State<DPRScreen> {
                     ),
                   ),
                 ),
-                if (_isEditing)
+                if (isEditing)
                   IconButton(
                     icon: const Icon(Icons.calendar_today, size: 18),
                     onPressed: () => _selectDate(context, fieldName),
@@ -291,15 +291,15 @@ class _DPRScreenState extends State<DPRScreen> {
                   const SizedBox(height: 8),
                   Expanded(
                     child: TextField(
-                      controller: _broadScopeController,
-                      enabled: _isEditing,
+                      controller: broadScopeController,
+                      enabled: isEditing,
                       maxLines: null,
                       expands: true,
                       textAlignVertical: TextAlignVertical.top,
                       decoration: InputDecoration(
                         hintText: 'Enter broad scope of work...',
                         filled: true,
-                        fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
+                        fillColor: isEditing ? Colors.white : Colors.grey.shade100,
                       ),
                     ),
                   ),

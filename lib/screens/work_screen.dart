@@ -13,18 +13,18 @@ class WorkScreen extends StatefulWidget {
   const WorkScreen({super.key, required this.project});
 
   @override
-  State<WorkScreen> createState() => _WorkScreenState();
+  State<WorkScreen> createState() => WorkScreenState();
 }
 
-class _WorkScreenState extends State<WorkScreen> {
-  late WorkData _workData;
+class WorkScreenState extends State<WorkScreen> {
+  late WorkData workData;
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  bool _isEditing = false;
+  bool isEditing = false;
 
   @override
   void initState() {
     super.initState();
-    _workData = widget.project.workData ?? WorkData();
+    workData = widget.project.workData ?? WorkData();
   }
 
   Future<void> _selectDate(BuildContext context, String fieldName) async {
@@ -46,33 +46,33 @@ class _WorkScreenState extends State<WorkScreen> {
   DateTime? _getDateForField(String field) {
     switch (field) {
       case 'aa':
-        return _workData.aa;
+        return workData.aa;
       case 'dpr':
-        return _workData.dpr;
+        return workData.dpr;
       case 'ts':
-        return _workData.ts;
+        return workData.ts;
       case 'bidDoc':
-        return _workData.bidDoc;
+        return workData.bidDoc;
       case 'bidInvite':
-        return _workData.bidInvite;
+        return workData.bidInvite;
       case 'prebid':
-        return _workData.prebid;
+        return workData.prebid;
       case 'csd':
-        return _workData.csd;
+        return workData.csd;
       case 'bidSubmit':
-        return _workData.bidSubmit;
+        return workData.bidSubmit;
       case 'finBid':
-        return _workData.finBid;
+        return workData.finBid;
       case 'loi':
-        return _workData.loi;
+        return workData.loi;
       case 'loa':
-        return _workData.loa;
+        return workData.loa;
       case 'pbg':
-        return _workData.pbg;
+        return workData.pbg;
       case 'agreement':
-        return _workData.agreement;
+        return workData.agreement;
       case 'workOrder':
-        return _workData.workOrder;
+        return workData.workOrder;
       default:
         return null;
     }
@@ -81,55 +81,55 @@ class _WorkScreenState extends State<WorkScreen> {
   void _setDateForField(String field, DateTime date) {
     switch (field) {
       case 'aa':
-        _workData.aa = date;
+        workData.aa = date;
         break;
       case 'dpr':
-        _workData.dpr = date;
+        workData.dpr = date;
         break;
       case 'ts':
-        _workData.ts = date;
+        workData.ts = date;
         break;
       case 'bidDoc':
-        _workData.bidDoc = date;
+        workData.bidDoc = date;
         break;
       case 'bidInvite':
-        _workData.bidInvite = date;
+        workData.bidInvite = date;
         break;
       case 'prebid':
-        _workData.prebid = date;
+        workData.prebid = date;
         break;
       case 'csd':
-        _workData.csd = date;
+        workData.csd = date;
         break;
       case 'bidSubmit':
-        _workData.bidSubmit = date;
+        workData.bidSubmit = date;
         break;
       case 'finBid':
-        _workData.finBid = date;
+        workData.finBid = date;
         break;
       case 'loi':
-        _workData.loi = date;
+        workData.loi = date;
         break;
       case 'loa':
-        _workData.loa = date;
+        workData.loa = date;
         break;
       case 'pbg':
-        _workData.pbg = date;
+        workData.pbg = date;
         break;
       case 'agreement':
-        _workData.agreement = date;
+        workData.agreement = date;
         break;
       case 'workOrder':
-        _workData.workOrder = date;
+        workData.workOrder = date;
         break;
     }
   }
 
-  void _saveChanges() {
-    widget.project.workData = _workData;
+  void saveChanges() {
+    widget.project.workData = workData;
     context.read<DataService>().updateProject(widget.project);
     setState(() {
-      _isEditing = false;
+      isEditing = false;
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -162,7 +162,7 @@ class _WorkScreenState extends State<WorkScreen> {
                     ),
                   ),
                 ),
-                if (_isEditing)
+                if (isEditing)
                   IconButton(
                     icon: const Icon(Icons.calendar_today, size: 18),
                     onPressed: () => _selectDate(context, fieldName),

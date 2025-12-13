@@ -13,33 +13,33 @@ class WorkEntryScreen extends StatefulWidget {
   const WorkEntryScreen({super.key, required this.project});
 
   @override
-  State<WorkEntryScreen> createState() => _WorkEntryScreenState();
+  State<WorkEntryScreen> createState() => WorkEntryScreenState();
 }
 
-class _WorkEntryScreenState extends State<WorkEntryScreen> {
-  late List<WorkEntryActivity> _activities;
+class WorkEntryScreenState extends State<WorkEntryScreen> {
+  late List<WorkEntryActivity> activities;
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  bool _isEditing = false;
-  int? _expandedIndex;
+  bool isEditing = false;
+  int? expandedIndex;
 
   @override
   void initState() {
     super.initState();
-    _initializeActivities();
+    initializeActivities();
   }
 
-  void _initializeActivities() {
+  void initializeActivities() {
     if (widget.project.workEntryActivities != null && widget.project.workEntryActivities!.isNotEmpty) {
-      _activities = List.from(widget.project.workEntryActivities!);
+      activities = List.from(widget.project.workEntryActivities!);
     } else {
-      _activities = AppConstants.workEntryActivities
+      activities = AppConstants.workEntryActivities
           .map((name) => WorkEntryActivity(particulars: name))
           .toList();
     }
   }
 
   Future<void> _selectDate(BuildContext context, int index, bool isStartDate) async {
-    final activity = _activities[index];
+    final activity = activities[index];
     final initialDate = isStartDate
         ? (activity.startDate ?? DateTime.now())
         : (activity.endDate ?? activity.startDate ?? DateTime.now());
@@ -54,28 +54,28 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
     if (pickedDate != null) {
       setState(() {
         if (isStartDate) {
-          _activities[index].startDate = pickedDate;
+          activities[index].startDate = pickedDate;
           // Auto-calculate end date if period is set
-          if (_activities[index].periodDays != null && _activities[index].periodDays! > 0) {
-            _activities[index].endDate = pickedDate.add(Duration(days: _activities[index].periodDays!));
+          if (activities[index].periodDays != null && activities[index].periodDays! > 0) {
+            activities[index].endDate = pickedDate.add(Duration(days: activities[index].periodDays!));
           }
         } else {
-          _activities[index].endDate = pickedDate;
+          activities[index].endDate = pickedDate;
           // Auto-calculate period if start date is set
-          if (_activities[index].startDate != null) {
-            _activities[index].periodDays = pickedDate.difference(_activities[index].startDate!).inDays;
+          if (activities[index].startDate != null) {
+            activities[index].periodDays = pickedDate.difference(activities[index].startDate!).inDays;
           }
         }
       });
     }
   }
 
-  void _saveChanges() {
-    widget.project.workEntryActivities = _activities;
+  void saveChanges() {
+    widget.project.workEntryActivities = activities;
     context.read<DataService>().updateProject(widget.project);
     setState(() {
-      _isEditing = false;
-      _expandedIndex = null;
+      isEditing = false;
+      expandedIndex = null;
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -101,10 +101,10 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
   Widget build(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: _activities.length,
+      itemCount: activities.length,
       itemBuilder: (context, index) {
-              final activity = _activities[index];
-              final isExpanded = _expandedIndex == index;
+              final activity = activities[index];
+              final isExpanded = expandedIndex == index;
               final statusColor = _getActivityStatusColor(activity);
               final statusIcon = _getActivityStatusIcon(activity);
 
@@ -134,25 +134,25 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
                               'Not started',
                               style: TextStyle(fontSize: 12, color: AppTheme.textHint),
                             ),
-                      trailing: _isEditing
+                      trailing: isEditing
                           ? IconButton(
                               icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
                               onPressed: () {
                                 setState(() {
-                                  _expandedIndex = isExpanded ? null : index;
+                                  expandedIndex = isExpanded ? null : index;
                                 });
                               },
                             )
                           : Icon(statusIcon, color: statusColor, size: 20),
-                      onTap: _isEditing
+                      onTap: isEditing
                           ? () {
                               setState(() {
-                                _expandedIndex = isExpanded ? null : index;
+                                expandedIndex = isExpanded ? null : index;
                               });
                             }
                           : null,
                     ),
-                    if (isExpanded && _isEditing) ...[
+                    if (isExpanded && isEditing) ...[
                       const Divider(height: 1),
                       Padding(
                         padding: const EdgeInsets.all(16),
@@ -223,9 +223,9 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
                                         onChanged: (value) {
                                           final days = int.tryParse(value);
                                           setState(() {
-                                            _activities[index].periodDays = days;
+                                            activities[index].periodDays = days;
                                             if (days != null && activity.startDate != null) {
-                                              _activities[index].endDate =
+                                              activities[index].endDate =
                                                   activity.startDate!.add(Duration(days: days));
                                             }
                                           });
@@ -302,7 +302,7 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
                                         }).toList(),
                                         onChanged: (value) {
                                           setState(() {
-                                            _activities[index].personResponsible = value;
+                                            activities[index].personResponsible = value;
                                           });
                                         },
                                       ),
@@ -333,7 +333,7 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
                                         }).toList(),
                                         onChanged: (value) {
                                           setState(() {
-                                            _activities[index].postHeld = value;
+                                            activities[index].postHeld = value;
                                           });
                                         },
                                       ),
@@ -358,7 +358,7 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
                                   ),
                                   controller: TextEditingController(text: activity.pendingWith ?? ''),
                                   onChanged: (value) {
-                                    _activities[index].pendingWith = value.isNotEmpty ? value : null;
+                                    activities[index].pendingWith = value.isNotEmpty ? value : null;
                                   },
                                 ),
                               ],

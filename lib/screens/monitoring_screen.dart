@@ -13,13 +13,13 @@ class MonitoringScreen extends StatefulWidget {
   const MonitoringScreen({super.key, required this.project});
 
   @override
-  State<MonitoringScreen> createState() => _MonitoringScreenState();
+  State<MonitoringScreen> createState() => MonitoringScreenState();
 }
 
-class _MonitoringScreenState extends State<MonitoringScreen> {
-  late MonitoringData _monitoringData;
+class MonitoringScreenState extends State<MonitoringScreen> {
+  late MonitoringData monitoringData;
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  bool _isEditing = false;
+  bool isEditing = false;
 
   final TextEditingController _agreementAmountController = TextEditingController();
   final TextEditingController _tenderPeriodController = TextEditingController();
@@ -41,27 +41,27 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
   @override
   void initState() {
     super.initState();
-    _monitoringData = widget.project.monitoringData ?? MonitoringData();
-    _initializeControllers();
+    monitoringData = widget.project.monitoringData ?? MonitoringData();
+    initializeControllers();
   }
 
-  void _initializeControllers() {
-    _agreementAmountController.text = _monitoringData.agreementAmount?.toString() ?? '';
-    _tenderPeriodController.text = _monitoringData.tenderPeriod ?? '';
-    _firstMilestoneController.text = _monitoringData.firstMilestone?.toString() ?? '';
-    _secondMilestoneController.text = _monitoringData.secondMilestone?.toString() ?? '';
-    _thirdMilestoneController.text = _monitoringData.thirdMilestone?.toString() ?? '';
-    _fourthMilestoneController.text = _monitoringData.fourthMilestone?.toString() ?? '';
-    _fifthMilestoneController.text = _monitoringData.fifthMilestone?.toString() ?? '';
-    _ldController.text = _monitoringData.ld ?? '';
-    _cosController.text = _monitoringData.cos ?? '';
-    _eotController.text = _monitoringData.eot ?? '';
-    _cumulativeExpenditureController.text = _monitoringData.cumulativeExpenditure?.toString() ?? '';
-    _finalBillController.text = _monitoringData.finalBill?.toString() ?? '';
-    _auditParaController.text = _monitoringData.auditPara ?? '';
-    _repliesController.text = _monitoringData.replies ?? '';
-    _laqLcqController.text = _monitoringData.laqLcq ?? '';
-    _techAuditController.text = _monitoringData.techAudit ?? '';
+  void initializeControllers() {
+    _agreementAmountController.text = monitoringData.agreementAmount?.toString() ?? '';
+    _tenderPeriodController.text = monitoringData.tenderPeriod ?? '';
+    _firstMilestoneController.text = monitoringData.firstMilestone?.toString() ?? '';
+    _secondMilestoneController.text = monitoringData.secondMilestone?.toString() ?? '';
+    _thirdMilestoneController.text = monitoringData.thirdMilestone?.toString() ?? '';
+    _fourthMilestoneController.text = monitoringData.fourthMilestone?.toString() ?? '';
+    _fifthMilestoneController.text = monitoringData.fifthMilestone?.toString() ?? '';
+    _ldController.text = monitoringData.ld ?? '';
+    _cosController.text = monitoringData.cos ?? '';
+    _eotController.text = monitoringData.eot ?? '';
+    _cumulativeExpenditureController.text = monitoringData.cumulativeExpenditure?.toString() ?? '';
+    _finalBillController.text = monitoringData.finalBill?.toString() ?? '';
+    _auditParaController.text = monitoringData.auditPara ?? '';
+    _repliesController.text = monitoringData.replies ?? '';
+    _laqLcqController.text = monitoringData.laqLcq ?? '';
+    _techAuditController.text = monitoringData.techAudit ?? '';
   }
 
   @override
@@ -86,7 +86,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final initialDate = _monitoringData.appointedDate ?? DateTime.now();
+    final initialDate = monitoringData.appointedDate ?? DateTime.now();
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -96,33 +96,33 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 
     if (pickedDate != null) {
       setState(() {
-        _monitoringData.appointedDate = pickedDate;
+        monitoringData.appointedDate = pickedDate;
       });
     }
   }
 
-  void _saveChanges() {
-    _monitoringData.agreementAmount = double.tryParse(_agreementAmountController.text);
-    _monitoringData.tenderPeriod = _tenderPeriodController.text.isNotEmpty ? _tenderPeriodController.text : null;
-    _monitoringData.firstMilestone = int.tryParse(_firstMilestoneController.text);
-    _monitoringData.secondMilestone = int.tryParse(_secondMilestoneController.text);
-    _monitoringData.thirdMilestone = int.tryParse(_thirdMilestoneController.text);
-    _monitoringData.fourthMilestone = int.tryParse(_fourthMilestoneController.text);
-    _monitoringData.fifthMilestone = int.tryParse(_fifthMilestoneController.text);
-    _monitoringData.ld = _ldController.text.isNotEmpty ? _ldController.text : null;
-    _monitoringData.cos = _cosController.text.isNotEmpty ? _cosController.text : null;
-    _monitoringData.eot = _eotController.text.isNotEmpty ? _eotController.text : null;
-    _monitoringData.cumulativeExpenditure = double.tryParse(_cumulativeExpenditureController.text);
-    _monitoringData.finalBill = double.tryParse(_finalBillController.text);
-    _monitoringData.auditPara = _auditParaController.text.isNotEmpty ? _auditParaController.text : null;
-    _monitoringData.replies = _repliesController.text.isNotEmpty ? _repliesController.text : null;
-    _monitoringData.laqLcq = _laqLcqController.text.isNotEmpty ? _laqLcqController.text : null;
-    _monitoringData.techAudit = _techAuditController.text.isNotEmpty ? _techAuditController.text : null;
+  void saveChanges() {
+    monitoringData.agreementAmount = double.tryParse(_agreementAmountController.text);
+    monitoringData.tenderPeriod = _tenderPeriodController.text.isNotEmpty ? _tenderPeriodController.text : null;
+    monitoringData.firstMilestone = int.tryParse(_firstMilestoneController.text);
+    monitoringData.secondMilestone = int.tryParse(_secondMilestoneController.text);
+    monitoringData.thirdMilestone = int.tryParse(_thirdMilestoneController.text);
+    monitoringData.fourthMilestone = int.tryParse(_fourthMilestoneController.text);
+    monitoringData.fifthMilestone = int.tryParse(_fifthMilestoneController.text);
+    monitoringData.ld = _ldController.text.isNotEmpty ? _ldController.text : null;
+    monitoringData.cos = _cosController.text.isNotEmpty ? _cosController.text : null;
+    monitoringData.eot = _eotController.text.isNotEmpty ? _eotController.text : null;
+    monitoringData.cumulativeExpenditure = double.tryParse(_cumulativeExpenditureController.text);
+    monitoringData.finalBill = double.tryParse(_finalBillController.text);
+    monitoringData.auditPara = _auditParaController.text.isNotEmpty ? _auditParaController.text : null;
+    monitoringData.replies = _repliesController.text.isNotEmpty ? _repliesController.text : null;
+    monitoringData.laqLcq = _laqLcqController.text.isNotEmpty ? _laqLcqController.text : null;
+    monitoringData.techAudit = _techAuditController.text.isNotEmpty ? _techAuditController.text : null;
 
-    widget.project.monitoringData = _monitoringData;
+    widget.project.monitoringData = monitoringData;
     context.read<DataService>().updateProject(widget.project);
     setState(() {
-      _isEditing = false;
+      isEditing = false;
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -171,7 +171,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
             const SizedBox(height: 4),
             TextField(
               controller: controller,
-              enabled: _isEditing,
+              enabled: isEditing,
               keyboardType: keyboardType,
               inputFormatters: inputFormatters,
               maxLines: maxLines,
@@ -180,7 +180,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                 hintText: hintText,
                 hintStyle: const TextStyle(fontSize: 11),
                 filled: true,
-                fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
+                fillColor: isEditing ? Colors.white : Colors.grey.shade100,
                 suffixText: suffix,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               ),
@@ -192,7 +192,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
   }
 
   Widget _buildDateField() {
-    final date = _monitoringData.appointedDate;
+    final date = monitoringData.appointedDate;
     final dateString = date != null ? _dateFormat.format(date) : 'Not set';
 
     return Card(
@@ -217,7 +217,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (_isEditing)
+                if (isEditing)
                   IconButton(
                     icon: const Icon(Icons.calendar_today, size: 14),
                     onPressed: () => _selectDate(context),
@@ -310,7 +310,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                 Expanded(
                   child: TextField(
                     controller: controller,
-                    enabled: _isEditing,
+                    enabled: isEditing,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
@@ -321,7 +321,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
                       hintText: '0-100',
                       hintStyle: const TextStyle(fontSize: 11),
                       filled: true,
-                      fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
+                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
                       suffixText: '%',
                       contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                     ),
