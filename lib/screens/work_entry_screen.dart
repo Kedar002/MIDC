@@ -9,8 +9,9 @@ import '../services/data_service.dart';
 
 class WorkEntryScreen extends StatefulWidget {
   final Project project;
+  final String searchQuery;
 
-  const WorkEntryScreen({super.key, required this.project});
+  const WorkEntryScreen({super.key, required this.project, this.searchQuery = ''});
 
   @override
   State<WorkEntryScreen> createState() => WorkEntryScreenState();
@@ -97,14 +98,42 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
     return Icons.radio_button_unchecked;
   }
 
+  bool _matchesSearch(WorkEntryActivity activity) {
+    if (widget.searchQuery.isEmpty) return true;
+    final query = widget.searchQuery.toLowerCase();
+    return activity.particulars.toLowerCase().contains(query) ||
+        (activity.personResponsible?.toLowerCase().contains(query) ?? false) ||
+        (activity.postHeld?.toLowerCase().contains(query) ?? false) ||
+        (activity.pendingWith?.toLowerCase().contains(query) ?? false);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final filteredActivities = activities.where(_matchesSearch).toList();
+
+    if (filteredActivities.isEmpty && widget.searchQuery.isNotEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            Text(
+              'No results found for "${widget.searchQuery}"',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: activities.length,
+      itemCount: filteredActivities.length,
       itemBuilder: (context, index) {
-              final activity = activities[index];
-              final isExpanded = expandedIndex == index;
+              final activity = filteredActivities[index];
+              final actualIndex = activities.indexOf(activity);
+              final isExpanded = expandedIndex == actualIndex;
               final statusColor = _getActivityStatusColor(activity);
               final statusIcon = _getActivityStatusIcon(activity);
 
@@ -139,7 +168,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                               icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
                               onPressed: () {
                                 setState(() {
-                                  expandedIndex = isExpanded ? null : index;
+                                  expandedIndex = isExpanded ? null : actualIndex;
                                 });
                               },
                             )
@@ -147,7 +176,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                       onTap: isEditing
                           ? () {
                               setState(() {
-                                expandedIndex = isExpanded ? null : index;
+                                expandedIndex = isExpanded ? null : actualIndex;
                               });
                             }
                           : null,
@@ -171,7 +200,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       InkWell(
-                                        onTap: () => _selectDate(context, index, true),
+                                        onTap: () => _selectDate(context, actualIndex, true),
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                           decoration: BoxDecoration(
@@ -223,9 +252,9 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                         onChanged: (value) {
                                           final days = int.tryParse(value);
                                           setState(() {
-                                            activities[index].periodDays = days;
+                                            activities[actualIndex].periodDays = days;
                                             if (days != null && activity.startDate != null) {
-                                              activities[index].endDate =
+                                              activities[actualIndex].endDate =
                                                   activity.startDate!.add(Duration(days: days));
                                             }
                                           });
@@ -245,7 +274,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       InkWell(
-                                        onTap: () => _selectDate(context, index, false),
+                                        onTap: () => _selectDate(context, actualIndex, false),
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                           decoration: BoxDecoration(
@@ -302,7 +331,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                         }).toList(),
                                         onChanged: (value) {
                                           setState(() {
-                                            activities[index].personResponsible = value;
+                                            activities[actualIndex].personResponsible = value;
                                           });
                                         },
                                       ),
@@ -333,7 +362,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                         }).toList(),
                                         onChanged: (value) {
                                           setState(() {
-                                            activities[index].postHeld = value;
+                                            activities[actualIndex].postHeld = value;
                                           });
                                         },
                                       ),
@@ -358,7 +387,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                   ),
                                   controller: TextEditingController(text: activity.pendingWith ?? ''),
                                   onChanged: (value) {
-                                    activities[index].pendingWith = value.isNotEmpty ? value : null;
+                                    activities[actualIndex].pendingWith = value.isNotEmpty ? value : null;
                                   },
                                 ),
                               ],

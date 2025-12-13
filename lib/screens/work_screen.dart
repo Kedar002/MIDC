@@ -9,8 +9,9 @@ import '../services/data_service.dart';
 
 class WorkScreen extends StatefulWidget {
   final Project project;
+  final String searchQuery;
 
-  const WorkScreen({super.key, required this.project});
+  const WorkScreen({super.key, required this.project, this.searchQuery = ''});
 
   @override
   State<WorkScreen> createState() => WorkScreenState();
@@ -230,8 +231,39 @@ class WorkScreenState extends State<WorkScreen> {
     );
   }
 
+  bool _matchesSearch(Map<String, String> fieldInfo) {
+    if (widget.searchQuery.isEmpty) return true;
+    final query = widget.searchQuery.toLowerCase();
+    return fieldInfo['label']!.toLowerCase().contains(query) ||
+        (fieldInfo['responsiblePerson']?.toLowerCase().contains(query) ?? false) ||
+        (fieldInfo['fullName']?.toLowerCase().contains(query) ?? false);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final filteredFields = <int>[];
+    for (int i = 0; i < AppConstants.workFields.length; i++) {
+      if (_matchesSearch(AppConstants.workFields[i])) {
+        filteredFields.add(i);
+      }
+    }
+
+    if (filteredFields.isEmpty && widget.searchQuery.isNotEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            Text(
+              'No results found for "${widget.searchQuery}"',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+      );
+    }
+
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -240,8 +272,9 @@ class WorkScreenState extends State<WorkScreen> {
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
-      itemCount: AppConstants.workFields.length,
-      itemBuilder: (context, index) {
+      itemCount: filteredFields.length,
+      itemBuilder: (context, idx) {
+        final index = filteredFields[idx];
         final fieldInfo = AppConstants.workFields[index];
         final fieldName = _getFieldNameFromIndex(index);
         return _buildDateField(fieldName, fieldInfo);

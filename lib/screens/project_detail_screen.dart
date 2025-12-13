@@ -4,6 +4,7 @@ import '../models/dpr_data.dart';
 import '../models/work_data.dart';
 import '../models/monitoring_data.dart';
 import '../theme/app_theme.dart';
+import '../widgets/common_app_bar.dart';
 import 'dpr_screen.dart';
 import 'work_screen.dart';
 import 'monitoring_screen.dart';
@@ -22,6 +23,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   int _selectedIndex = 1; // Start with Work tab (index 1)
   bool _isDrawerExpanded = false;
   bool _isDrawerPinned = false;
+  String _searchQuery = '';
 
   // GlobalKeys for accessing child screen states
   final GlobalKey<DPRScreenState> _dprKey = GlobalKey();
@@ -151,15 +153,15 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   Widget _getSelectedScreen() {
     switch (_selectedIndex) {
       case 0:
-        return DPRScreen(key: _dprKey, project: widget.project);
+        return DPRScreen(key: _dprKey, project: widget.project, searchQuery: _searchQuery);
       case 1:
-        return WorkScreen(key: _workKey, project: widget.project);
+        return WorkScreen(key: _workKey, project: widget.project, searchQuery: _searchQuery);
       case 2:
-        return MonitoringScreen(key: _monitoringKey, project: widget.project);
+        return MonitoringScreen(key: _monitoringKey, project: widget.project, searchQuery: _searchQuery);
       case 3:
-        return WorkEntryScreen(key: _workEntryKey, project: widget.project);
+        return WorkEntryScreen(key: _workEntryKey, project: widget.project, searchQuery: _searchQuery);
       default:
-        return WorkScreen(key: _workKey, project: widget.project);
+        return WorkScreen(key: _workKey, project: widget.project, searchQuery: _searchQuery);
     }
   }
 
@@ -225,50 +227,27 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     final currentTab = _tabs[_selectedIndex];
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Row(
-          children: [
-            Icon(currentTab['icon'], color: Colors.white),
-            const SizedBox(width: 8),
-            Text(currentTab['tooltip']),
-          ],
-        ),
-        actions: [
-          if (!_isCurrentScreenEditing())
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: _toggleEdit,
-              tooltip: 'Edit',
-            ),
-          if (_isCurrentScreenEditing()) ...[
-            IconButton(
-              icon: const Icon(Icons.cancel),
-              onPressed: _cancelEdit,
-              tooltip: 'Cancel',
-            ),
-            IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _saveChanges,
-              tooltip: 'Save',
-            ),
-          ],
-          const SizedBox(width: 8),
-          IconButton(
-            icon: Icon(_isDrawerPinned ? Icons.push_pin : Icons.push_pin_outlined),
-            onPressed: () {
-              setState(() {
-                _isDrawerPinned = !_isDrawerPinned;
-                _isDrawerExpanded = _isDrawerPinned;
-              });
-            },
-            tooltip: _isDrawerPinned ? 'Unpin sidebar' : 'Pin sidebar',
-          ),
-          const SizedBox(width: 8),
-        ],
+      appBar: CommonAppBar(
+        title: currentTab['tooltip'],
+        icon: currentTab['icon'],
+        showEditButton: true,
+        isEditing: _isCurrentScreenEditing(),
+        onEditToggle: _toggleEdit,
+        onSave: _saveChanges,
+        onCancel: _cancelEdit,
+        onPinToggle: () {
+          setState(() {
+            _isDrawerPinned = !_isDrawerPinned;
+            _isDrawerExpanded = _isDrawerPinned;
+          });
+        },
+        isPinned: _isDrawerPinned,
+        showSearch: true,
+        onSearchChanged: (query) {
+          setState(() {
+            _searchQuery = query;
+          });
+        },
       ),
       body: Row(
         children: [

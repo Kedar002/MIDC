@@ -9,8 +9,9 @@ import '../services/data_service.dart';
 
 class MonitoringScreen extends StatefulWidget {
   final Project project;
+  final String searchQuery;
 
-  const MonitoringScreen({super.key, required this.project});
+  const MonitoringScreen({super.key, required this.project, this.searchQuery = ''});
 
   @override
   State<MonitoringScreen> createState() => MonitoringScreenState();
@@ -350,8 +351,62 @@ class MonitoringScreenState extends State<MonitoringScreen> {
     );
   }
 
+  bool _matchesSearch(String label) {
+    if (widget.searchQuery.isEmpty) return true;
+    final query = widget.searchQuery.toLowerCase();
+    return label.toLowerCase().contains(query);
+  }
+
+  List<int> _getFilteredIndices() {
+    final labels = [
+      'Agreement Amount',
+      'Date of Appointment',
+      'Tender Period',
+      'Cumulative Expenditure',
+      'Final Bill',
+      'First Milestone',
+      'Second Milestone',
+      'Third Milestone',
+      'Fourth Milestone',
+      'Fifth Milestone',
+      'LD (Liquidated Damages)',
+      'COS (Change of Scope)',
+      'EOT (Extension of Time)',
+      'Audit Para',
+      'Replies',
+      'LAQ/LCQ',
+      'Technical Audit',
+    ];
+
+    final filtered = <int>[];
+    for (int i = 0; i < labels.length; i++) {
+      if (_matchesSearch(labels[i])) {
+        filtered.add(i);
+      }
+    }
+    return filtered;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final filteredIndices = _getFilteredIndices();
+
+    if (filteredIndices.isEmpty && widget.searchQuery.isNotEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            Text(
+              'No results found for "${widget.searchQuery}"',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+      );
+    }
+
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -360,8 +415,9 @@ class MonitoringScreenState extends State<MonitoringScreen> {
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
-      itemCount: 17,
-      itemBuilder: (context, index) {
+      itemCount: filteredIndices.length,
+      itemBuilder: (context, idx) {
+        final index = filteredIndices[idx];
               // Financial Information (0-4)
               if (index == 0) {
                 return _buildTextField(
