@@ -81,6 +81,25 @@ class DataService with ChangeNotifier {
     }
   }
 
+  void addProject(Project project) {
+    final existingIndex = _projects.indexWhere((p) => p.id == project.id);
+    if (existingIndex != -1) {
+      // Update existing project
+      _projects[existingIndex] = project;
+    } else {
+      // Add new project
+      _projects.add(project);
+    }
+    notifyListeners();
+    saveProjectsToLocal();
+  }
+
+  void replaceAllProjects(List<Project> newProjects) {
+    _projects = newProjects;
+    notifyListeners();
+    saveProjectsToLocal();
+  }
+
   Future<void> saveProjectsToLocal() async {
     try {
       final jsonData = {
