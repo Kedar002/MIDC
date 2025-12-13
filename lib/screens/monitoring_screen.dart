@@ -352,102 +352,60 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final overallProgress = _monitoringData.getOverallMilestoneProgress();
-
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(16),
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(color: Colors.grey.shade200),
+            ),
+          ),
+          child: Row(
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.analytics, color: AppTheme.primaryBlue),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Project Monitoring',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (!_isEditing)
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _isEditing = true;
-                        });
-                      },
-                      icon: const Icon(Icons.edit, size: 18),
-                      label: const Text('Edit'),
-                    ),
-                  if (_isEditing) ...[
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _monitoringData = widget.project.monitoringData ?? MonitoringData();
-                          _initializeControllers();
-                          _isEditing = false;
-                        });
-                      },
-                      icon: const Icon(Icons.cancel, size: 18),
-                      label: const Text('Cancel'),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      onPressed: _saveChanges,
-                      icon: const Icon(Icons.save, size: 18),
-                      label: const Text('Save'),
-                    ),
-                  ],
-                ],
+              const Icon(Icons.analytics, color: AppTheme.primaryBlue),
+              const SizedBox(width: 8),
+              const Text(
+                'Project Monitoring',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Overall Milestone Progress',
-                          style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
-                        ),
-                        const SizedBox(height: 4),
-                        LinearProgressIndicator(
-                          value: overallProgress / 100,
-                          backgroundColor: Colors.grey.shade200,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppTheme.getStatusColor(
-                              overallProgress == 0
-                                  ? 'Pending'
-                                  : overallProgress == 100
-                                      ? 'Completed'
-                                      : 'In Progress',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    '$overallProgress%',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryBlue,
-                    ),
-                  ),
-                ],
-              ),
+              const Spacer(),
+              if (!_isEditing)
+                OutlinedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _isEditing = true;
+                    });
+                  },
+                  icon: const Icon(Icons.edit, size: 18),
+                  label: const Text('Edit'),
+                ),
+              if (_isEditing) ...[
+                OutlinedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _monitoringData = widget.project.monitoringData ?? MonitoringData();
+                      _initializeControllers();
+                      _isEditing = false;
+                    });
+                  },
+                  icon: const Icon(Icons.cancel, size: 18),
+                  label: const Text('Cancel'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  onPressed: _saveChanges,
+                  icon: const Icon(Icons.save, size: 18),
+                  label: const Text('Save'),
+                ),
+              ],
             ],
           ),
         ),
-        const Divider(height: 1),
         Expanded(
           child: GridView.builder(
             padding: const EdgeInsets.all(16),

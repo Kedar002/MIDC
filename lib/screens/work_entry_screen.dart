@@ -99,113 +99,60 @@ class _WorkEntryScreenState extends State<WorkEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final completedCount = _activities.where((a) => a.isCompleted).length;
-    final inProgressCount = _activities.where((a) => a.isInProgress).length;
-    final completionPercentage = ((completedCount / _activities.length) * 100).round();
-
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(16),
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(color: Colors.grey.shade200),
+            ),
+          ),
+          child: Row(
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.edit_note, color: AppTheme.primaryBlue),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Work Entry Details',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (!_isEditing)
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _isEditing = true;
-                        });
-                      },
-                      icon: const Icon(Icons.edit, size: 18),
-                      label: const Text('Edit'),
-                    ),
-                  if (_isEditing) ...[
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _initializeActivities();
-                          _isEditing = false;
-                          _expandedIndex = null;
-                        });
-                      },
-                      icon: const Icon(Icons.cancel, size: 18),
-                      label: const Text('Cancel'),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      onPressed: _saveChanges,
-                      icon: const Icon(Icons.save, size: 18),
-                      label: const Text('Save'),
-                    ),
-                  ],
-                ],
+              const Icon(Icons.edit_note, color: AppTheme.primaryBlue),
+              const SizedBox(width: 8),
+              const Text(
+                'Work Entry Details',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Text(
-                              'Activities Progress',
-                              style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '$completedCount completed, $inProgressCount in progress',
-                              style: const TextStyle(fontSize: 11, color: AppTheme.textHint),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        LinearProgressIndicator(
-                          value: completionPercentage / 100,
-                          backgroundColor: Colors.grey.shade200,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppTheme.getStatusColor(
-                              completionPercentage == 0
-                                  ? 'Pending'
-                                  : completionPercentage == 100
-                                      ? 'Completed'
-                                      : 'In Progress',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    '$completionPercentage%',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryBlue,
-                    ),
-                  ),
-                ],
-              ),
+              const Spacer(),
+              if (!_isEditing)
+                OutlinedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _isEditing = true;
+                    });
+                  },
+                  icon: const Icon(Icons.edit, size: 18),
+                  label: const Text('Edit'),
+                ),
+              if (_isEditing) ...[
+                OutlinedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _initializeActivities();
+                      _isEditing = false;
+                      _expandedIndex = null;
+                    });
+                  },
+                  icon: const Icon(Icons.cancel, size: 18),
+                  label: const Text('Cancel'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  onPressed: _saveChanges,
+                  icon: const Icon(Icons.save, size: 18),
+                  label: const Text('Save'),
+                ),
+              ],
             ],
           ),
         ),
-        const Divider(height: 1),
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
