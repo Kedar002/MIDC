@@ -56,8 +56,6 @@ class _CommonAppBarState extends State<CommonAppBar> {
       ),
       title: Row(
         children: [
-          Icon(widget.icon, color: Colors.white),
-          const SizedBox(width: 12),
           Text(widget.title),
           if (widget.showSearch) ...[
             const SizedBox(width: 16),
