@@ -408,27 +408,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                     ],
                                   ),
                                 )
-                              : const SizedBox.shrink(),
+                              : const SizedBox(height: 145, width: 60), // Match expanded height
                         ),
-                        if (!_isDrawerExpanded)
-                          Container(
-                            width: 60,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Center(
-                              child: CircleAvatar(
-                                radius: 18,
-                                backgroundColor: AppTheme.getCategoryColor(widget.project.category).withOpacity(0.2),
-                                child: Text(
-                                  '${widget.project.srNo}',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.getCategoryColor(widget.project.category),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
                         // Navigation Items
                         Expanded(
                           child: ListView(
