@@ -323,19 +323,6 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      CircleAvatar(
-                                        radius: 20,
-                                        backgroundColor: AppTheme.getCategoryColor(widget.project.category).withOpacity(0.2),
-                                        child: Text(
-                                          '${widget.project.srNo}',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppTheme.getCategoryColor(widget.project.category),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
                                       ConstrainedBox(
                                         constraints: const BoxConstraints(maxWidth: 226),
                                         child: Text(
@@ -408,7 +395,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                     ],
                                   ),
                                 )
-                              : const SizedBox(height: 145, width: 60), // Match expanded height
+                              : const SizedBox(height: 97, width: 60), // Match expanded height
                         ),
                         // Navigation Items
                         Expanded(
