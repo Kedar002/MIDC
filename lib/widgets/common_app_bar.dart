@@ -37,23 +37,14 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CommonAppBarState extends State<CommonAppBar> {
-  bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
-  }
-
-  void _toggleSearch() {
-    setState(() {
-      _isSearching = !_isSearching;
-      if (!_isSearching) {
-        _searchController.clear();
-        widget.onSearchChanged?.call('');
-      }
-    });
   }
 
   @override
@@ -63,33 +54,74 @@ class _CommonAppBarState extends State<CommonAppBar> {
         icon: const Icon(Icons.arrow_back),
         onPressed: () => Navigator.pop(context),
       ),
-      title: _isSearching
-          ? TextField(
-              controller: _searchController,
-              autofocus: true,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                hintText: 'Search...',
-                hintStyle: TextStyle(color: Colors.white70),
-                border: InputBorder.none,
+      title: Row(
+        children: [
+          Icon(widget.icon, color: Colors.white),
+          const SizedBox(width: 12),
+          Text(widget.title),
+          if (widget.showSearch) ...[
+            const SizedBox(width: 16),
+            Expanded(
+              child: Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    hintStyle: TextStyle(
+                      color: Colors.black.withOpacity(0.6),
+                      fontSize: 14,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.blue.withOpacity(0.7),
+                      size: 20,
+                    ),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.clear,
+                              color: Colors.black.withOpacity(0.7),
+                              size: 18,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                              widget.onSearchChanged?.call('');
+                              setState(() {});
+                            },
+                          )
+                        : null,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    widget.onSearchChanged?.call(value);
+                    setState(() {});
+                  },
+                ),
               ),
-              onChanged: widget.onSearchChanged,
-            )
-          : Row(
-              children: [
-                Icon(widget.icon, color: Colors.white),
-                const SizedBox(width: 8),
-                Text(widget.title),
-              ],
             ),
+          ],
+        ],
+      ),
       actions: [
-        if (widget.showSearch)
-          IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search),
-            onPressed: _toggleSearch,
-            tooltip: _isSearching ? 'Close search' : 'Search',
-          ),
-        if (!_isSearching && widget.showEditButton) ...[
+        if (widget.showEditButton) ...[
           if (!widget.isEditing)
             IconButton(
               icon: const Icon(Icons.edit),
@@ -109,7 +141,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
             ),
           ],
         ],
-        if (!_isSearching && widget.onPinToggle != null) ...[
+        if (widget.onPinToggle != null) ...[
           const SizedBox(width: 8),
           IconButton(
             icon: Icon(widget.isPinned ? Icons.push_pin : Icons.push_pin_outlined),
