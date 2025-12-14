@@ -4,6 +4,9 @@ import '../models/dpr_data.dart';
 import '../models/work_data.dart';
 import '../models/monitoring_data.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 import '../widgets/common_app_bar.dart';
 import 'dpr_screen.dart';
 import 'work_screen.dart';
@@ -175,21 +178,21 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   }) {
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: isExpanded ? 8 : 4,
-        vertical: 2,
+        horizontal: isExpanded ? AppSpacing.sm : AppSpacing.xs,
+        vertical: AppSpacing.xxs,
       ),
       child: Material(
-        color: isSelected ? AppTheme.primaryBlue : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
+        color: isSelected ? AppColors.primary : Colors.transparent,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           child: Tooltip(
             message: tooltip ?? label,
             child: Container(
               padding: EdgeInsets.symmetric(
-                horizontal: isExpanded ? 16 : 8,
-                vertical: 12,
+                horizontal: isExpanded ? AppSpacing.lg : AppSpacing.sm,
+                vertical: AppSpacing.md,
               ),
               child: Row(
                 mainAxisSize: isExpanded ? MainAxisSize.max : MainAxisSize.min,
@@ -197,18 +200,17 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 children: [
                   Icon(
                     icon,
-                    size: 20,
-                    color: isSelected ? Colors.white : AppTheme.textPrimary,
+                    size: AppSpacing.iconMd,
+                    color: isSelected ? AppColors.background : AppColors.textPrimary,
                   ),
                   if (isExpanded) ...[
-                    const SizedBox(width: 12),
+                    SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Text(
                         label,
-                        style: TextStyle(
-                          fontSize: 14,
+                        style: AppTextStyles.body.copyWith(
                           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                          color: isSelected ? Colors.white : AppTheme.textPrimary,
+                          color: isSelected ? AppColors.background : AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -271,9 +273,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
               duration: const Duration(milliseconds: 200),
               width: _isDrawerExpanded ? 250 : 60,
               decoration: BoxDecoration(
-                color: AppTheme.sidebarBackground,
+                color: AppColors.surface,
                 border: Border(
-                  right: BorderSide(color: Colors.grey.shade300),
+                  right: BorderSide(color: AppColors.border),
                 ),
               ),
               child: ClipRect(
@@ -291,11 +293,11 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                           child: _isDrawerExpanded
                               ? Container(
                                   width: 250,
-                                  padding: const EdgeInsets.all(12),
+                                  padding: EdgeInsets.all(AppSpacing.md),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.primaryBlue.withOpacity(0.05),
+                                    color: AppColors.primary.withOpacity(0.05),
                                     border: Border(
-                                      bottom: BorderSide(color: Colors.grey.shade300),
+                                      bottom: BorderSide(color: AppColors.border),
                                     ),
                                   ),
                                   child: Column(
@@ -306,38 +308,39 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                         constraints: const BoxConstraints(maxWidth: 226),
                                         child: Text(
                                           widget.project.name,
-                                          style: const TextStyle(
-                                            fontSize: 13,
+                                          style: AppTextStyles.labelSmall.copyWith(
                                             fontWeight: FontWeight.w600,
-                                            color: AppTheme.textPrimary,
+                                            color: AppColors.textPrimary,
                                           ),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
+                                      SizedBox(height: AppSpacing.xs),
                                       ConstrainedBox(
                                         constraints: const BoxConstraints(maxWidth: 226),
                                         child: Text(
                                           '${widget.project.categoryName} • Cat ${widget.project.category}',
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            color: AppTheme.textSecondary,
+                                          style: AppTextStyles.captionSmall.copyWith(
+                                            color: AppColors.textSecondary,
                                           ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
-                                      const SizedBox(height: 6),
+                                      SizedBox(height: AppSpacing.sm),
                                       ConstrainedBox(
                                         constraints: const BoxConstraints(maxWidth: 200),
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: AppSpacing.sm,
+                                            vertical: AppSpacing.xxs,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: AppTheme.getStatusColor(widget.project.status).withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                                             border: Border.all(
                                               color: AppTheme.getStatusColor(widget.project.status),
                                               width: 1,
@@ -354,13 +357,12 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                                   shape: BoxShape.circle,
                                                 ),
                                               ),
-                                              const SizedBox(width: 4),
+                                              SizedBox(width: AppSpacing.xs),
                                               Flexible(
                                                 child: Text(
                                                   widget.project.status,
-                                                  style: TextStyle(
+                                                  style: AppTextStyles.captionSmall.copyWith(
                                                     color: AppTheme.getStatusColor(widget.project.status),
-                                                    fontSize: 10,
                                                     fontWeight: FontWeight.w600,
                                                   ),
                                                   maxLines: 1,
@@ -379,7 +381,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                         // Navigation Items
                         Expanded(
                           child: ListView(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
                             children: List.generate(_tabs.length, (index) {
                               final tab = _tabs[index];
                               return _buildDrawerItem(

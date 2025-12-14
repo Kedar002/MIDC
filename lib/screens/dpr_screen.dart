@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 import '../models/project.dart';
 import '../models/dpr_data.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 import '../services/data_service.dart';
 
 class DPRScreen extends StatefulWidget {
@@ -72,22 +75,20 @@ class DPRScreenState extends State<DPRScreen> {
       isEditing = false;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text('DPR data saved successfully'),
-        backgroundColor: AppTheme.statusCompleted,
+        backgroundColor: AppColors.success,
       ),
     );
   }
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 8),
+      padding: EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.sm),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: AppTheme.primaryBlue,
+        style: AppTextStyles.h6.copyWith(
+          color: AppColors.primary,
         ),
       ),
     );
@@ -99,24 +100,28 @@ class DPRScreenState extends State<DPRScreen> {
     required Function(WorkflowStatus?) onChanged,
   }) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 0,
+      margin: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+              style: AppTextStyles.label.copyWith(
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             Wrap(
-              spacing: 16,
-              runSpacing: 8,
+              spacing: AppSpacing.lg,
+              runSpacing: AppSpacing.sm,
               children: WorkflowStatus.values.map((status) {
                 return InkWell(
                   onTap: isEditing ? () => onChanged(status) : null,
@@ -130,7 +135,7 @@ class DPRScreenState extends State<DPRScreen> {
                       ),
                       Text(
                         status.displayName,
-                        style: const TextStyle(fontSize: 13),
+                        style: AppTextStyles.labelSmall,
                       ),
                     ],
                   ),
@@ -151,24 +156,28 @@ class DPRScreenState extends State<DPRScreen> {
     required Function(DateTime) onDateChanged,
   }) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 0,
+      margin: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+              style: AppTextStyles.label.copyWith(
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             Wrap(
-              spacing: 16,
-              runSpacing: 8,
+              spacing: AppSpacing.lg,
+              runSpacing: AppSpacing.sm,
               children: WorkflowStatus.values.map((s) {
                 return InkWell(
                   onTap: isEditing ? () => onStatusChanged(s) : null,
@@ -182,7 +191,7 @@ class DPRScreenState extends State<DPRScreen> {
                       ),
                       Text(
                         s.displayName,
-                        style: const TextStyle(fontSize: 13),
+                        style: AppTextStyles.labelSmall,
                       ),
                     ],
                   ),
@@ -190,35 +199,34 @@ class DPRScreenState extends State<DPRScreen> {
               }).toList(),
             ),
             if (status != WorkflowStatus.notStarted) ...[
-              const SizedBox(height: 12),
-              const Divider(),
-              const SizedBox(height: 8),
+              SizedBox(height: AppSpacing.md),
+              Divider(color: AppColors.border),
+              SizedBox(height: AppSpacing.sm),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Date:',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                    style: AppTextStyles.labelSmall.copyWith(fontWeight: FontWeight.w500),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: InkWell(
                       onTap: isEditing ? () => _selectDate(context, onDateChanged) : null,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(8),
-                          color: isEditing ? Colors.white : Colors.grey.shade100,
+                          border: Border.all(color: AppColors.border),
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                          color: isEditing ? AppColors.background : AppColors.surface,
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.calendar_today, size: 16),
-                            const SizedBox(width: 8),
+                            Icon(Icons.calendar_today, size: AppSpacing.iconSm),
+                            SizedBox(width: AppSpacing.sm),
                             Text(
                               date != null ? _dateFormat.format(date) : 'Select date',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: date != null ? AppTheme.textPrimary : AppTheme.textHint,
+                              style: AppTextStyles.labelSmall.copyWith(
+                                color: date != null ? AppColors.textPrimary : AppColors.textTertiary,
                               ),
                             ),
                           ],
@@ -241,39 +249,42 @@ class DPRScreenState extends State<DPRScreen> {
     required Function(DateTime) onDateChanged,
   }) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 0,
+      margin: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+              style: AppTextStyles.label.copyWith(
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             InkWell(
               onTap: isEditing ? () => _selectDate(context, onDateChanged) : null,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                  color: isEditing ? Colors.white : Colors.grey.shade100,
+                  border: Border.all(color: AppColors.border),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  color: isEditing ? AppColors.background : AppColors.surface,
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today, size: 16),
-                    const SizedBox(width: 8),
+                    Icon(Icons.calendar_today, size: AppSpacing.iconSm),
+                    SizedBox(width: AppSpacing.sm),
                     Text(
                       date != null ? _dateFormat.format(date) : 'Select date',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: date != null ? AppTheme.textPrimary : AppTheme.textHint,
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: date != null ? AppColors.textPrimary : AppColors.textTertiary,
                       ),
                     ),
                   ],
@@ -293,21 +304,25 @@ class DPRScreenState extends State<DPRScreen> {
     String? hint,
   }) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 0,
+      margin: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+              style: AppTextStyles.label.copyWith(
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             TextField(
               enabled: isEditing,
               keyboardType: TextInputType.number,
@@ -316,8 +331,8 @@ class DPRScreenState extends State<DPRScreen> {
               decoration: InputDecoration(
                 hintText: hint ?? 'Enter number',
                 filled: true,
-                fillColor: isEditing ? Colors.white : Colors.grey.shade100,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                fillColor: isEditing ? AppColors.background : AppColors.surface,
+                contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
               ),
               onChanged: (val) {
                 onChanged(int.tryParse(val));
@@ -336,21 +351,25 @@ class DPRScreenState extends State<DPRScreen> {
     int maxLines = 1,
   }) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 0,
+      margin: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+              style: AppTextStyles.label.copyWith(
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             TextField(
               enabled: isEditing,
               controller: controller,
@@ -358,8 +377,8 @@ class DPRScreenState extends State<DPRScreen> {
               decoration: InputDecoration(
                 hintText: hint ?? 'Enter text',
                 filled: true,
-                fillColor: isEditing ? Colors.white : Colors.grey.shade100,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                fillColor: isEditing ? AppColors.background : AppColors.surface,
+                contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
               ),
             ),
           ],
@@ -376,21 +395,25 @@ class DPRScreenState extends State<DPRScreen> {
     required Function(WorkflowStatus?) onStatusChanged,
   }) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 0,
+      margin: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+              style: AppTextStyles.label.copyWith(
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             Row(
               children: [
                 Expanded(
@@ -402,8 +425,8 @@ class DPRScreenState extends State<DPRScreen> {
                     decoration: InputDecoration(
                       labelText: 'Nos.',
                       filled: true,
-                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      fillColor: isEditing ? AppColors.background : AppColors.surface,
+                      contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                     ),
                     onChanged: (val) {
                       onNosChanged(int.tryParse(val));
@@ -412,10 +435,10 @@ class DPRScreenState extends State<DPRScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             Wrap(
-              spacing: 16,
-              runSpacing: 8,
+              spacing: AppSpacing.lg,
+              runSpacing: AppSpacing.sm,
               children: WorkflowStatus.values.map((s) {
                 return InkWell(
                   onTap: isEditing ? () => onStatusChanged(s) : null,
@@ -429,7 +452,7 @@ class DPRScreenState extends State<DPRScreen> {
                       ),
                       Text(
                         s.displayName,
-                        style: const TextStyle(fontSize: 13),
+                        style: AppTextStyles.labelSmall,
                       ),
                     ],
                   ),
@@ -444,44 +467,47 @@ class DPRScreenState extends State<DPRScreen> {
 
   Widget _buildPBGField() {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 0,
+      margin: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Performance Bank Guarantee (PBG)',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+              style: AppTextStyles.label.copyWith(
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             Row(
               children: [
-                const Text('Date:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-                const SizedBox(width: 12),
+                Text('Date:', style: AppTextStyles.labelSmall.copyWith(fontWeight: FontWeight.w500)),
+                SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: InkWell(
                     onTap: isEditing ? () => _selectDate(context, (date) => dprData.pbgDate = date) : null,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                        color: isEditing ? Colors.white : Colors.grey.shade100,
+                        border: Border.all(color: AppColors.border),
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                        color: isEditing ? AppColors.background : AppColors.surface,
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_today, size: 16),
-                          const SizedBox(width: 8),
+                          Icon(Icons.calendar_today, size: AppSpacing.iconSm),
+                          SizedBox(width: AppSpacing.sm),
                           Text(
                             dprData.pbgDate != null ? _dateFormat.format(dprData.pbgDate!) : 'Select date',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: dprData.pbgDate != null ? AppTheme.textPrimary : AppTheme.textHint,
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: dprData.pbgDate != null ? AppColors.textPrimary : AppColors.textTertiary,
                             ),
                           ),
                         ],
@@ -491,7 +517,7 @@ class DPRScreenState extends State<DPRScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.md),
             Row(
               children: [
                 Expanded(
@@ -502,8 +528,8 @@ class DPRScreenState extends State<DPRScreen> {
                     decoration: InputDecoration(
                       labelText: 'Amount',
                       filled: true,
-                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      fillColor: isEditing ? AppColors.background : AppColors.surface,
+                      contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                     ),
                     onChanged: (val) {
                       setState(() {
@@ -512,7 +538,7 @@ class DPRScreenState extends State<DPRScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: TextField(
                     enabled: isEditing,
@@ -522,8 +548,8 @@ class DPRScreenState extends State<DPRScreen> {
                     decoration: InputDecoration(
                       labelText: 'Period (Days)',
                       filled: true,
-                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      fillColor: isEditing ? AppColors.background : AppColors.surface,
+                      contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                     ),
                     onChanged: (val) {
                       setState(() {
@@ -549,7 +575,7 @@ class DPRScreenState extends State<DPRScreen> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppSpacing.lg),
       children: [
         // 1. Broad Scope of Work
         if (_matchesSearch('Broad Scope of Work'))
@@ -888,21 +914,25 @@ class DPRScreenState extends State<DPRScreen> {
         // 28. Flyover
         if (_matchesSearch('Flyover'))
           Card(
-            margin: const EdgeInsets.symmetric(vertical: 8),
+            elevation: 0,
+            margin: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              side: BorderSide(color: AppColors.border, width: 1),
+            ),
+            color: AppColors.surface,
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppSpacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Flyover',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
+                    style: AppTextStyles.label.copyWith(
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: AppSpacing.md),
                   TextField(
                     enabled: isEditing,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -910,8 +940,8 @@ class DPRScreenState extends State<DPRScreen> {
                     decoration: InputDecoration(
                       labelText: 'Length (meters)',
                       filled: true,
-                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      fillColor: isEditing ? AppColors.background : AppColors.surface,
+                      contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                     ),
                     onChanged: (val) {
                       setState(() {
@@ -919,10 +949,10 @@ class DPRScreenState extends State<DPRScreen> {
                       });
                     },
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: AppSpacing.md),
                   Wrap(
-                    spacing: 16,
-                    runSpacing: 8,
+                    spacing: AppSpacing.lg,
+                    runSpacing: AppSpacing.sm,
                     children: WorkflowStatus.values.map((s) {
                       return InkWell(
                         onTap: isEditing ? () => setState(() => dprData.flyoverStatus = s) : null,
@@ -936,7 +966,7 @@ class DPRScreenState extends State<DPRScreen> {
                             ),
                             Text(
                               s.displayName,
-                              style: const TextStyle(fontSize: 13),
+                              style: AppTextStyles.labelSmall,
                             ),
                           ],
                         ),
@@ -948,7 +978,7 @@ class DPRScreenState extends State<DPRScreen> {
             ),
           ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: AppSpacing.xl),
       ],
     );
   }

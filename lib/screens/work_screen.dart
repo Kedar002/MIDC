@@ -5,6 +5,9 @@ import '../models/project.dart';
 import '../models/work_data.dart';
 import '../utils/constants.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 import '../services/data_service.dart';
 
 class WorkScreen extends StatefulWidget {
@@ -133,9 +136,9 @@ class WorkScreenState extends State<WorkScreen> {
       isEditing = false;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text('Changes saved successfully'),
-        backgroundColor: AppTheme.statusCompleted,
+        backgroundColor: AppColors.success,
       ),
     );
   }
@@ -145,9 +148,15 @@ class WorkScreenState extends State<WorkScreen> {
     final dateString = date != null ? _dateFormat.format(date) : 'Not set';
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      elevation: 0,
+      margin: EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -156,58 +165,55 @@ class WorkScreenState extends State<WorkScreen> {
                 Expanded(
                   child: Text(
                     fieldInfo['label']!,
-                    style: const TextStyle(
-                      fontSize: 13,
+                    style: AppTextStyles.labelSmall.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
                 if (isEditing)
                   IconButton(
-                    icon: const Icon(Icons.calendar_today, size: 18),
+                    icon: Icon(Icons.calendar_today, size: AppSpacing.iconSm),
                     onPressed: () => _selectDate(context, fieldName),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
               ],
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: AppSpacing.xs),
             Text(
               'Responsible: ${fieldInfo['responsiblePerson']}',
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppTheme.textHint,
+              style: AppTextStyles.captionSmall.copyWith(
+                color: AppColors.textTertiary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppSpacing.sm),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
               decoration: BoxDecoration(
                 color: date != null
-                    ? AppTheme.statusCompleted.withOpacity(0.1)
-                    : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(6),
+                    ? AppColors.success.withOpacity(0.1)
+                    : AppColors.surface,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 border: Border.all(
                   color: date != null
-                      ? AppTheme.statusCompleted.withOpacity(0.3)
-                      : Colors.grey.shade300,
+                      ? AppColors.success.withOpacity(0.3)
+                      : AppColors.border,
                 ),
               ),
               child: Row(
                 children: [
                   Icon(
                     date != null ? Icons.check_circle : Icons.radio_button_unchecked,
-                    size: 16,
-                    color: date != null ? AppTheme.statusCompleted : Colors.grey,
+                    size: AppSpacing.iconSm,
+                    color: date != null ? AppColors.success : AppColors.textTertiary,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: AppSpacing.sm),
                   Text(
                     dateString,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: date != null ? AppTheme.textPrimary : AppTheme.textHint,
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: date != null ? AppColors.textPrimary : AppColors.textTertiary,
                       fontWeight: date != null ? FontWeight.w500 : FontWeight.normal,
                     ),
                   ),
@@ -215,12 +221,11 @@ class WorkScreenState extends State<WorkScreen> {
               ),
             ),
             if (fieldInfo['fullName'] != null && fieldInfo['fullName'] != fieldInfo['label']) ...[
-              const SizedBox(height: 4),
+              SizedBox(height: AppSpacing.xs),
               Text(
                 fieldInfo['fullName']!,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: AppTheme.textHint,
+                style: AppTextStyles.captionSmall.copyWith(
+                  color: AppColors.textTertiary,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -253,11 +258,11 @@ class WorkScreenState extends State<WorkScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
+            Icon(Icons.search_off, size: 64, color: AppColors.textTertiary),
+            SizedBox(height: AppSpacing.lg),
             Text(
               'No results found for "${widget.searchQuery}"',
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -265,12 +270,12 @@ class WorkScreenState extends State<WorkScreen> {
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      padding: EdgeInsets.all(AppSpacing.lg),
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 300,
         mainAxisExtent: 140,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+        crossAxisSpacing: AppSpacing.sm,
+        mainAxisSpacing: AppSpacing.sm,
       ),
       itemCount: filteredFields.length,
       itemBuilder: (context, idx) {

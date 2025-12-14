@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import '../models/project.dart';
 import '../models/work_entry_data.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 import '../utils/constants.dart';
 import '../services/data_service.dart';
 
@@ -81,15 +84,15 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Work entry data saved successfully'),
-        backgroundColor: AppTheme.statusCompleted,
+        backgroundColor: AppColors.success,
       ),
     );
   }
 
   Color _getActivityStatusColor(WorkEntryActivity activity) {
-    if (activity.isCompleted) return AppTheme.statusCompleted;
-    if (activity.isInProgress) return AppTheme.statusInProgress;
-    return AppTheme.statusPending;
+    if (activity.isCompleted) return AppColors.success;
+    if (activity.isInProgress) return AppColors.warning;
+    return AppColors.textSecondary;
   }
 
   IconData _getActivityStatusIcon(WorkEntryActivity activity) {
@@ -159,9 +162,9 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                               'Start: ${_dateFormat.format(activity.startDate!)}${activity.endDate != null ? ' • End: ${_dateFormat.format(activity.endDate!)}' : ''}',
                               style: const TextStyle(fontSize: 12),
                             )
-                          : const Text(
+                          : Text(
                               'Not started',
-                              style: TextStyle(fontSize: 12, color: AppTheme.textHint),
+                              style: AppTextStyles.captionSmall.copyWith(color: AppColors.textTertiary),
                             ),
                       trailing: isEditing
                           ? IconButton(
@@ -218,8 +221,8 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   color: activity.startDate != null
-                                                      ? AppTheme.textPrimary
-                                                      : AppTheme.textHint,
+                                                      ? AppColors.textPrimary
+                                                      : AppColors.textTertiary,
                                                 ),
                                               ),
                                             ],
@@ -292,8 +295,8 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   color: activity.endDate != null
-                                                      ? AppTheme.textPrimary
-                                                      : AppTheme.textHint,
+                                                      ? AppColors.textPrimary
+                                                      : AppColors.textTertiary,
                                                 ),
                                               ),
                                             ],

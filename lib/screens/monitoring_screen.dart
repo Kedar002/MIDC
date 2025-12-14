@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 import '../models/project.dart';
 import '../models/monitoring_data.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 import '../services/data_service.dart';
 
 class MonitoringScreen extends StatefulWidget {
@@ -126,9 +129,9 @@ class MonitoringScreenState extends State<MonitoringScreen> {
       isEditing = false;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text('Monitoring data saved successfully'),
-        backgroundColor: AppTheme.statusCompleted,
+        backgroundColor: AppColors.success,
       ),
     );
   }
@@ -144,46 +147,50 @@ class MonitoringScreenState extends State<MonitoringScreen> {
     int maxLines = 1,
   }) {
     return Card(
-      margin: const EdgeInsets.all(4),
+      elevation: 0,
+      margin: EdgeInsets.all(AppSpacing.xs),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(AppSpacing.sm),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 11,
+              style: AppTextStyles.captionSmall.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+                color: AppColors.textPrimary,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 2),
+            SizedBox(height: AppSpacing.xxs),
             Text(
               'Responsible: $responsiblePerson',
-              style: const TextStyle(
-                fontSize: 9,
-                color: AppTheme.textHint,
+              style: AppTextStyles.captionSmall.copyWith(
+                color: AppColors.textTertiary,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: AppSpacing.xs),
             TextField(
               controller: controller,
               enabled: isEditing,
               keyboardType: keyboardType,
               inputFormatters: inputFormatters,
               maxLines: maxLines,
-              style: const TextStyle(fontSize: 12),
+              style: AppTextStyles.labelSmall,
               decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: const TextStyle(fontSize: 11),
+                hintStyle: AppTextStyles.captionSmall,
                 filled: true,
-                fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+                fillColor: isEditing ? AppColors.background : AppColors.surface,
                 suffixText: suffix,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
               ),
             ),
           ],
@@ -197,22 +204,27 @@ class MonitoringScreenState extends State<MonitoringScreen> {
     final dateString = date != null ? _dateFormat.format(date) : 'Not set';
 
     return Card(
-      margin: const EdgeInsets.all(4),
+      elevation: 0,
+      margin: EdgeInsets.all(AppSpacing.xs),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(AppSpacing.sm),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Appointed Date',
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: AppTextStyles.captionSmall.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
+                      color: AppColors.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -220,49 +232,47 @@ class MonitoringScreenState extends State<MonitoringScreen> {
                 ),
                 if (isEditing)
                   IconButton(
-                    icon: const Icon(Icons.calendar_today, size: 14),
+                    icon: Icon(Icons.calendar_today, size: AppSpacing.iconXs),
                     onPressed: () => _selectDate(context),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
               ],
             ),
-            const SizedBox(height: 2),
-            const Text(
+            SizedBox(height: AppSpacing.xxs),
+            Text(
               'Responsible: SE',
-              style: TextStyle(
-                fontSize: 9,
-                color: AppTheme.textHint,
+              style: AppTextStyles.captionSmall.copyWith(
+                color: AppColors.textTertiary,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: AppSpacing.xs),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
               decoration: BoxDecoration(
                 color: date != null
-                    ? AppTheme.statusCompleted.withOpacity(0.1)
-                    : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(6),
+                    ? AppColors.success.withOpacity(0.1)
+                    : AppColors.surface,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 border: Border.all(
                   color: date != null
-                      ? AppTheme.statusCompleted.withOpacity(0.3)
-                      : Colors.grey.shade300,
+                      ? AppColors.success.withOpacity(0.3)
+                      : AppColors.border,
                 ),
               ),
               child: Row(
                 children: [
                   Icon(
                     date != null ? Icons.check_circle : Icons.radio_button_unchecked,
-                    size: 12,
-                    color: date != null ? AppTheme.statusCompleted : Colors.grey,
+                    size: AppSpacing.iconXs,
+                    color: date != null ? AppColors.success : AppColors.textTertiary,
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: AppSpacing.xs),
                   Text(
                     dateString,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: date != null ? AppTheme.textPrimary : AppTheme.textHint,
+                    style: AppTextStyles.captionSmall.copyWith(
+                      color: date != null ? AppColors.textPrimary : AppColors.textTertiary,
                       fontWeight: date != null ? FontWeight.w500 : FontWeight.normal,
                     ),
                   ),
@@ -282,30 +292,34 @@ class MonitoringScreenState extends State<MonitoringScreen> {
     final progress = int.tryParse(controller.text) ?? 0;
 
     return Card(
-      margin: const EdgeInsets.all(4),
+      elevation: 0,
+      margin: EdgeInsets.all(AppSpacing.xs),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
+      color: AppColors.surface,
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(AppSpacing.sm),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 11,
+              style: AppTextStyles.captionSmall.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 2),
-            const Text(
+            SizedBox(height: AppSpacing.xxs),
+            Text(
               'Responsible: EE',
-              style: TextStyle(
-                fontSize: 9,
-                color: AppTheme.textHint,
+              style: AppTextStyles.captionSmall.copyWith(
+                color: AppColors.textTertiary,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: AppSpacing.xs),
             Row(
               children: [
                 Expanded(
@@ -317,14 +331,14 @@ class MonitoringScreenState extends State<MonitoringScreen> {
                       FilteringTextInputFormatter.digitsOnly,
                       FilteringTextInputFormatter.allow(RegExp(r'^([0-9]|[1-9][0-9]|100)$')),
                     ],
-                    style: const TextStyle(fontSize: 12),
+                    style: AppTextStyles.labelSmall,
                     decoration: InputDecoration(
                       hintText: '0-100',
-                      hintStyle: const TextStyle(fontSize: 11),
+                      hintStyle: AppTextStyles.captionSmall,
                       filled: true,
-                      fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+                      fillColor: isEditing ? AppColors.background : AppColors.surface,
                       suffixText: '%',
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                     ),
                     onChanged: (value) {
                       setState(() {});
@@ -333,16 +347,16 @@ class MonitoringScreenState extends State<MonitoringScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: AppSpacing.xs),
             LinearProgressIndicator(
               value: progress / 100,
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: AppColors.surface,
               valueColor: AlwaysStoppedAnimation<Color>(
                 progress == 0
-                    ? AppTheme.statusPending
+                    ? AppColors.warning
                     : progress == 100
-                        ? AppTheme.statusCompleted
-                        : AppTheme.statusInProgress,
+                        ? AppColors.success
+                        : AppColors.info,
               ),
             ),
           ],
@@ -396,11 +410,11 @@ class MonitoringScreenState extends State<MonitoringScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
+            Icon(Icons.search_off, size: 64, color: AppColors.textTertiary),
+            SizedBox(height: AppSpacing.lg),
             Text(
               'No results found for "${widget.searchQuery}"',
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -408,12 +422,12 @@ class MonitoringScreenState extends State<MonitoringScreen> {
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      padding: EdgeInsets.all(AppSpacing.lg),
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 300,
         mainAxisExtent: 160,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+        crossAxisSpacing: AppSpacing.sm,
+        mainAxisSpacing: AppSpacing.sm,
       ),
       itemCount: filteredIndices.length,
       itemBuilder: (context, idx) {

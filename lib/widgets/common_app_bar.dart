@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 
 class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -56,44 +59,38 @@ class _CommonAppBarState extends State<CommonAppBar> {
       ),
       title: Row(
         children: [
-          Text(widget.title),
+          Text(widget.title, style: AppTextStyles.h5),
           if (widget.showSearch) ...[
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.lg),
             Expanded(
               child: Container(
-                height: 40,
+                height: AppSpacing.inputHeight,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
+                    color: AppColors.border,
                     width: 1,
                   ),
                 ),
                 child: TextField(
                   controller: _searchController,
                   focusNode: _searchFocusNode,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                  ),
+                  style: AppTextStyles.body,
                   decoration: InputDecoration(
                     hintText: 'Search...',
-                    hintStyle: TextStyle(
-                      color: Colors.black.withOpacity(0.6),
-                      fontSize: 14,
-                    ),
-                    prefixIcon: Icon(
+                    hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
+                    prefixIcon: const Icon(
                       Icons.search,
-                      color: Colors.blue.withOpacity(0.7),
-                      size: 20,
+                      color: AppColors.textSecondary,
+                      size: AppSpacing.iconMd,
                     ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.clear,
-                              color: Colors.black.withOpacity(0.7),
-                              size: 18,
+                              color: AppColors.textSecondary,
+                              size: AppSpacing.iconSm,
                             ),
                             onPressed: () {
                               _searchController.clear();
@@ -104,8 +101,8 @@ class _CommonAppBarState extends State<CommonAppBar> {
                         : null,
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
                     ),
                   ),
                   onChanged: (value) {
@@ -140,14 +137,14 @@ class _CommonAppBarState extends State<CommonAppBar> {
           ],
         ],
         if (widget.onPinToggle != null) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           IconButton(
             icon: Icon(widget.isPinned ? Icons.push_pin : Icons.push_pin_outlined),
             onPressed: widget.onPinToggle,
             tooltip: widget.isPinned ? 'Unpin sidebar' : 'Pin sidebar',
           ),
         ],
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.sm),
       ],
     );
   }

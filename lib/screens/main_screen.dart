@@ -6,6 +6,9 @@ import '../models/project.dart';
 import '../widgets/project_card.dart';
 import '../widgets/search_filter_bar.dart';
 import '../utils/constants.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 import 'project_detail_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -52,35 +55,34 @@ class _MainScreenState extends State<MainScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Connect Google Sheet'),
+        title: Text('Connect Google Sheet', style: AppTextStyles.h4),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Share your Google Sheet:',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                style: AppTextStyles.label,
               ),
-              const SizedBox(height: 8),
-              const Text(
+              const SizedBox(height: AppSpacing.sm),
+              Text(
                 '1. Open your Google Sheet\n'
                 '2. Click "Share" button (top right)\n'
                 '3. Under "General access" select:\n'
                 '   "Anyone with the link" + "Viewer"\n'
                 '4. Click "Done"\n'
                 '5. Copy the URL from browser address bar',
-                style: TextStyle(fontSize: 12, color: Colors.black87),
+                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
               ),
-              const SizedBox(height: 16),
-              const Text('Then paste your Google Sheets URL:'),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.lg),
+              Text('Then paste your Google Sheets URL:', style: AppTextStyles.body),
+              const SizedBox(height: AppSpacing.sm),
               TextField(
                 controller: controller,
                 maxLines: 2,
                 decoration: const InputDecoration(
                   hintText: 'https://docs.google.com/spreadsheets/d/.../edit...',
-                  border: OutlineInputBorder(),
                 ),
               ),
             ],
@@ -119,7 +121,7 @@ class _MainScreenState extends State<MainScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Successfully connected to Google Sheet'),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
             ),
           );
         }
@@ -128,7 +130,7 @@ class _MainScreenState extends State<MainScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Connection failed: $e'),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -158,7 +160,7 @@ class _MainScreenState extends State<MainScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Synced ${projects.length} projects from Google Sheet'),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
             ),
           );
         }
@@ -168,7 +170,7 @@ class _MainScreenState extends State<MainScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Sync failed: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -185,8 +187,8 @@ class _MainScreenState extends State<MainScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Disconnect Google Sheet'),
-        content: const Text('Are you sure you want to disconnect from this Google Sheet?'),
+        title: Text('Disconnect Google Sheet', style: AppTextStyles.h4),
+        content: Text('Are you sure you want to disconnect from this Google Sheet?', style: AppTextStyles.body),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -194,7 +196,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: const Text('Disconnect'),
           ),
         ],
@@ -217,7 +219,7 @@ class _MainScreenState extends State<MainScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Disconnected from Google Sheet and cleared all data'),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.warning,
           ),
         );
       }
@@ -258,12 +260,10 @@ class _MainScreenState extends State<MainScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppConstants.appName),
+            Text(AppConstants.appName, style: AppTextStyles.h5),
             Text(
               AppConstants.appFullName,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withOpacity(0.9),
-                  ),
+              style: AppTextStyles.caption,
             ),
           ],
         ),
@@ -276,7 +276,7 @@ class _MainScreenState extends State<MainScreen> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.textPrimary),
                       ),
                     )
                   : const Icon(Icons.link),
@@ -291,7 +291,7 @@ class _MainScreenState extends State<MainScreen> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.textPrimary),
                       ),
                     )
                   : const Icon(Icons.sync),
@@ -304,19 +304,22 @@ class _MainScreenState extends State<MainScreen> {
               onPressed: _handleDisconnectSheet,
             ),
           ],
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
         ],
       ),
       body: Consumer<DataService>(
         builder: (context, dataService, child) {
           if (dataService.isLoading) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading projects...'),
+                  const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text('Loading projects...', style: AppTextStyles.body),
                 ],
               ),
             );
@@ -330,14 +333,14 @@ class _MainScreenState extends State<MainScreen> {
                   const Icon(
                     Icons.error_outline,
                     size: 64,
-                    color: Colors.red,
+                    color: AppColors.error,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.lg),
                   Text(
                     'Error: ${dataService.error}',
-                    style: const TextStyle(color: Colors.red),
+                    style: AppTextStyles.body.copyWith(color: AppColors.error),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.lg),
                   ElevatedButton.icon(
                     onPressed: () => dataService.loadProjects(),
                     icon: const Icon(Icons.refresh),
@@ -377,43 +380,42 @@ class _MainScreenState extends State<MainScreen> {
               Expanded(
                 child: filteredProjects.isEmpty
                     ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _connectedSheetUrl == null ? Icons.cloud_off : Icons.folder_open,
-                              size: 64,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              _connectedSheetUrl == null
-                                  ? 'No Google Sheet Connected'
-                                  : 'No projects found',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.xxxl),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _connectedSheetUrl == null ? Icons.cloud_off : Icons.folder_open,
+                                size: 64,
+                                color: AppColors.textTertiary,
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              _connectedSheetUrl == null
-                                  ? 'Click the link icon above to connect your Google Sheet'
-                                  : 'Try adjusting your filters or sync your sheet',
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
+                              const SizedBox(height: AppSpacing.lg),
+                              Text(
+                                _connectedSheetUrl == null
+                                    ? 'No Google Sheet Connected'
+                                    : 'No projects found',
+                                style: AppTextStyles.h4.copyWith(color: AppColors.textSecondary),
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                _connectedSheetUrl == null
+                                    ? 'Click the link icon above to connect your Google Sheet'
+                                    : 'Try adjusting your filters or sync your sheet',
+                                style: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     : GridView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(AppSpacing.lg),
                         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 400,
                           mainAxisExtent: 240,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
+                          crossAxisSpacing: AppSpacing.lg,
+                          mainAxisSpacing: AppSpacing.lg,
                         ),
                         itemCount: filteredProjects.length,
                         itemBuilder: (context, index) {

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 
 class SearchFilterBar extends StatelessWidget {
   final String searchQuery;
@@ -30,8 +33,13 @@ class SearchFilterBar extends StatelessWidget {
         searchQuery.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: const BoxDecoration(
+        color: AppColors.background,
+        border: Border(
+          bottom: BorderSide(color: AppColors.divider, width: 1),
+        ),
+      ),
       child: Column(
         children: [
           Row(
@@ -40,12 +48,13 @@ class SearchFilterBar extends StatelessWidget {
                 flex: 2,
                 child: TextField(
                   onChanged: onSearchChanged,
+                  style: AppTextStyles.body,
                   decoration: InputDecoration(
                     hintText: 'Search projects by name or category...',
-                    prefixIcon: const Icon(Icons.search, size: 20),
+                    prefixIcon: const Icon(Icons.search, size: AppSpacing.iconMd),
                     suffixIcon: searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear, size: 20),
+                            icon: const Icon(Icons.clear, size: AppSpacing.iconMd),
                             onPressed: () => onSearchChanged(''),
                           )
                         : null,
@@ -53,37 +62,48 @@ class SearchFilterBar extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: selectedCategory,
                   isExpanded: true,
-                  decoration: const InputDecoration(
+                  style: AppTextStyles.body,
+                  decoration: InputDecoration(
                     labelText: 'Category',
-                    prefixIcon: Icon(Icons.category, size: 20),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                    labelStyle: AppTextStyles.label,
+                    prefixIcon: const Icon(Icons.category, size: AppSpacing.iconMd),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 0),
                   ),
                   items: [
-                    const DropdownMenuItem(value: 'All', child: Text('All', overflow: TextOverflow.ellipsis)),
+                    DropdownMenuItem(
+                      value: 'All',
+                      child: Text('All', style: AppTextStyles.body, overflow: TextOverflow.ellipsis),
+                    ),
                     ...AppConstants.categories.entries.map(
                       (entry) => DropdownMenuItem(
                         value: entry.key,
-                        child: Text('${entry.key} - ${entry.value}', overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          '${entry.key} - ${entry.value}',
+                          style: AppTextStyles.body,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ],
                   onChanged: onCategoryChanged,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: selectedStatus,
                   isExpanded: true,
-                  decoration: const InputDecoration(
+                  style: AppTextStyles.body,
+                  decoration: InputDecoration(
                     labelText: 'Status',
-                    prefixIcon: Icon(Icons.flag, size: 20),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                    labelStyle: AppTextStyles.label,
+                    prefixIcon: const Icon(Icons.flag, size: AppSpacing.iconMd),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 0),
                   ),
                   items: AppConstants.projectStatuses.map(
                     (status) => DropdownMenuItem(
@@ -94,13 +114,19 @@ class SearchFilterBar extends StatelessWidget {
                             Container(
                               width: 8,
                               height: 8,
-                              margin: const EdgeInsets.only(right: 8),
+                              margin: const EdgeInsets.only(right: AppSpacing.sm),
                               decoration: BoxDecoration(
                                 color: AppTheme.getStatusColor(status),
                                 shape: BoxShape.circle,
                               ),
                             ),
-                          Expanded(child: Text(status, overflow: TextOverflow.ellipsis)),
+                          Expanded(
+                            child: Text(
+                              status,
+                              style: AppTextStyles.body,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -109,11 +135,14 @@ class SearchFilterBar extends StatelessWidget {
                 ),
               ),
               if (hasActiveFilters && onClearFilters != null) ...[
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 TextButton.icon(
                   onPressed: onClearFilters,
                   icon: const Icon(Icons.clear_all),
                   label: const Text('Clear'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ],
