@@ -8,6 +8,7 @@ import '../models/dpr_data.dart';
 import '../models/work_data.dart';
 import '../models/monitoring_data.dart';
 import '../models/work_entry_data.dart';
+import '../utils/constants.dart';
 
 class ExcelService {
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
@@ -360,18 +361,7 @@ class ExcelService {
     for (int i = rowIndex - 1; i >= 0; i--) {
       final cell = sheet.rows[i][0]?.value?.toString();
       if (cell != null && cell.length == 1 && RegExp(r'[A-E]').hasMatch(cell)) {
-        switch (cell) {
-          case 'A':
-            return 'Nashik Kumbhmela';
-          case 'B':
-            return 'HAM Projects';
-          case 'C':
-            return 'Nagpur Works';
-          case 'D':
-            return 'NHAI Projects';
-          case 'E':
-            return 'Other Projects';
-        }
+        return cell; // Return the category key (A, B, C, D, E)
       }
     }
     return 'Uncategorized';
@@ -428,7 +418,7 @@ class ExcelService {
         ..value = TextCellValue(_getCategoryLetter(category))
         ..cellStyle = CellStyle(bold: true);
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowIndex))
-        ..value = TextCellValue(category)
+        ..value = TextCellValue(AppConstants.categories[category] ?? category)
         ..cellStyle = CellStyle(bold: true);
       rowIndex++;
 
@@ -487,7 +477,7 @@ class ExcelService {
         ..value = TextCellValue(_getCategoryLetter(category))
         ..cellStyle = CellStyle(bold: true);
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowIndex))
-        ..value = TextCellValue(category)
+        ..value = TextCellValue(AppConstants.categories[category] ?? category)
         ..cellStyle = CellStyle(bold: true);
       rowIndex++;
 
@@ -541,7 +531,7 @@ class ExcelService {
         ..value = TextCellValue(_getCategoryLetter(category))
         ..cellStyle = CellStyle(bold: true);
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowIndex))
-        ..value = TextCellValue(category)
+        ..value = TextCellValue(AppConstants.categories[category] ?? category)
         ..cellStyle = CellStyle(bold: true);
       rowIndex++;
 
@@ -667,6 +657,11 @@ class ExcelService {
   }
 
   String _getCategoryLetter(String category) {
+    // If category is already a letter (A, B, C, D, E), return it
+    if (category.length == 1 && RegExp(r'[A-E]').hasMatch(category)) {
+      return category;
+    }
+    // For backward compatibility with full names
     switch (category) {
       case 'Nashik Kumbhmela':
         return 'A';

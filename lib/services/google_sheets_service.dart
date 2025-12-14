@@ -669,18 +669,7 @@ class GoogleSheetsService {
       if (rows[i].isNotEmpty) {
         final cell = rows[i][0]?.toString();
         if (cell != null && cell.length == 1 && RegExp(r'[A-E]').hasMatch(cell)) {
-          switch (cell) {
-            case 'A':
-              return 'Nashik Kumbhmela';
-            case 'B':
-              return 'HAM Projects';
-            case 'C':
-              return 'Nagpur Works';
-            case 'D':
-              return 'NHAI Projects';
-            case 'E':
-              return 'Other Projects';
-          }
+          return cell; // Return the category key (A, B, C, D, E)
         }
       }
     }
