@@ -279,7 +279,7 @@ class _MainScreenState extends State<MainScreen> {
                         valueColor: AlwaysStoppedAnimation<Color>(AppColors.textPrimary),
                       ),
                     )
-                  : const Icon(Icons.link),
+                  : const Icon(Icons.cable_outlined),
               tooltip: 'Connect Google Sheet',
               onPressed: _isConnecting ? null : _handleConnectSheet,
             ),
@@ -294,12 +294,12 @@ class _MainScreenState extends State<MainScreen> {
                         valueColor: AlwaysStoppedAnimation<Color>(AppColors.textPrimary),
                       ),
                     )
-                  : const Icon(Icons.sync),
+                  : const Icon(Icons.sync_outlined),
               tooltip: 'Sync from Google Sheet',
               onPressed: _isSyncing ? null : _syncFromGoogleSheets,
             ),
             IconButton(
-              icon: const Icon(Icons.link_off),
+              icon: const Icon(Icons.link_off_outlined),
               tooltip: 'Disconnect Google Sheet',
               onPressed: _handleDisconnectSheet,
             ),
@@ -343,7 +343,7 @@ class _MainScreenState extends State<MainScreen> {
                   const SizedBox(height: AppSpacing.lg),
                   ElevatedButton.icon(
                     onPressed: () => dataService.loadProjects(),
-                    icon: const Icon(Icons.refresh),
+                    icon: const Icon(Icons.refresh_outlined),
                     label: const Text('Retry'),
                   ),
                 ],
@@ -386,7 +386,7 @@ class _MainScreenState extends State<MainScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                _connectedSheetUrl == null ? Icons.cloud_off : Icons.folder_open,
+                                _connectedSheetUrl == null ? Icons.cloud_off_outlined : Icons.folder_outlined,
                                 size: 64,
                                 color: AppColors.textTertiary,
                               ),

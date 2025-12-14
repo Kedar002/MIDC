@@ -221,7 +221,7 @@ class DPRScreenState extends State<DPRScreen> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.calendar_today, size: AppSpacing.iconSm),
+                            Icon(Icons.calendar_month_outlined, size: AppSpacing.iconSm),
                             SizedBox(width: AppSpacing.sm),
                             Text(
                               date != null ? _dateFormat.format(date) : 'Select date',
@@ -279,7 +279,7 @@ class DPRScreenState extends State<DPRScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_today, size: AppSpacing.iconSm),
+                    Icon(Icons.calendar_month_outlined, size: AppSpacing.iconSm),
                     SizedBox(width: AppSpacing.sm),
                     Text(
                       date != null ? _dateFormat.format(date) : 'Select date',
@@ -502,7 +502,7 @@ class DPRScreenState extends State<DPRScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.calendar_today, size: AppSpacing.iconSm),
+                          Icon(Icons.calendar_month_outlined, size: AppSpacing.iconSm),
                           SizedBox(width: AppSpacing.sm),
                           Text(
                             dprData.pbgDate != null ? _dateFormat.format(dprData.pbgDate!) : 'Select date',

@@ -232,7 +232,7 @@ class MonitoringScreenState extends State<MonitoringScreen> {
                 ),
                 if (isEditing)
                   IconButton(
-                    icon: Icon(Icons.calendar_today, size: AppSpacing.iconXs),
+                    icon: Icon(Icons.calendar_month_outlined, size: AppSpacing.iconXs),
                     onPressed: () => _selectDate(context),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -264,7 +264,7 @@ class MonitoringScreenState extends State<MonitoringScreen> {
               child: Row(
                 children: [
                   Icon(
-                    date != null ? Icons.check_circle : Icons.radio_button_unchecked,
+                    date != null ? Icons.check_circle_outline : Icons.circle_outlined,
                     size: AppSpacing.iconXs,
                     color: date != null ? AppColors.success : AppColors.textTertiary,
                   ),
@@ -410,7 +410,7 @@ class MonitoringScreenState extends State<MonitoringScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 64, color: AppColors.textTertiary),
+            Icon(Icons.search_off_outlined, size: 64, color: AppColors.textTertiary),
             SizedBox(height: AppSpacing.lg),
             Text(
               'No results found for "${widget.searchQuery}"',

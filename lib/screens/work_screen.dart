@@ -173,7 +173,7 @@ class WorkScreenState extends State<WorkScreen> {
                 ),
                 if (isEditing)
                   IconButton(
-                    icon: Icon(Icons.calendar_today, size: AppSpacing.iconSm),
+                    icon: Icon(Icons.calendar_month_outlined, size: AppSpacing.iconSm),
                     onPressed: () => _selectDate(context, fieldName),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -205,7 +205,7 @@ class WorkScreenState extends State<WorkScreen> {
               child: Row(
                 children: [
                   Icon(
-                    date != null ? Icons.check_circle : Icons.radio_button_unchecked,
+                    date != null ? Icons.check_circle_outline : Icons.circle_outlined,
                     size: AppSpacing.iconSm,
                     color: date != null ? AppColors.success : AppColors.textTertiary,
                   ),
@@ -258,7 +258,7 @@ class WorkScreenState extends State<WorkScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 64, color: AppColors.textTertiary),
+            Icon(Icons.search_off_outlined, size: 64, color: AppColors.textTertiary),
             SizedBox(height: AppSpacing.lg),
             Text(
               'No results found for "${widget.searchQuery}"',

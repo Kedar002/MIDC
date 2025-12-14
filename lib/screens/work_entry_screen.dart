@@ -96,9 +96,9 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
   }
 
   IconData _getActivityStatusIcon(WorkEntryActivity activity) {
-    if (activity.isCompleted) return Icons.check_circle;
-    if (activity.isInProgress) return Icons.pending;
-    return Icons.radio_button_unchecked;
+    if (activity.isCompleted) return Icons.check_circle_outline;
+    if (activity.isInProgress) return Icons.schedule_outlined;
+    return Icons.circle_outlined;
   }
 
   bool _matchesSearch(WorkEntryActivity activity) {
@@ -119,7 +119,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+            Icon(Icons.search_off_outlined, size: 64, color: Colors.grey.shade400),
             const SizedBox(height: 16),
             Text(
               'No results found for "${widget.searchQuery}"',
@@ -168,7 +168,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                             ),
                       trailing: isEditing
                           ? IconButton(
-                              icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                              icon: Icon(isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
                               onPressed: () {
                                 setState(() {
                                   expandedIndex = isExpanded ? null : actualIndex;
@@ -212,7 +212,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                           ),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.calendar_today, size: 16),
+                                              const Icon(Icons.calendar_month_outlined, size: 16),
                                               const SizedBox(width: 8),
                                               Text(
                                                 activity.startDate != null
@@ -286,7 +286,7 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                                           ),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.calendar_today, size: 16),
+                                              const Icon(Icons.calendar_month_outlined, size: 16),
                                               const SizedBox(width: 8),
                                               Text(
                                                 activity.endDate != null

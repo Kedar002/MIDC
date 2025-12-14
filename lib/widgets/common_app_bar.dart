@@ -81,14 +81,14 @@ class _CommonAppBarState extends State<CommonAppBar> {
                     hintText: 'Search...',
                     hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
                     prefixIcon: const Icon(
-                      Icons.search,
+                      Icons.search_outlined,
                       color: AppColors.textSecondary,
                       size: AppSpacing.iconMd,
                     ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
                             icon: const Icon(
-                              Icons.clear,
+                              Icons.close,
                               color: AppColors.textSecondary,
                               size: AppSpacing.iconSm,
                             ),
@@ -119,18 +119,18 @@ class _CommonAppBarState extends State<CommonAppBar> {
         if (widget.showEditButton) ...[
           if (!widget.isEditing)
             IconButton(
-              icon: const Icon(Icons.edit),
+              icon: const Icon(Icons.edit_outlined),
               onPressed: widget.onEditToggle,
               tooltip: 'Edit',
             ),
           if (widget.isEditing) ...[
             IconButton(
-              icon: const Icon(Icons.cancel),
+              icon: const Icon(Icons.close),
               onPressed: widget.onCancel,
               tooltip: 'Cancel',
             ),
             IconButton(
-              icon: const Icon(Icons.save),
+              icon: const Icon(Icons.check),
               onPressed: widget.onSave,
               tooltip: 'Save',
             ),

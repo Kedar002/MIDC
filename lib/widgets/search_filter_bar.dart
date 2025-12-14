@@ -51,10 +51,10 @@ class SearchFilterBar extends StatelessWidget {
                   style: AppTextStyles.body,
                   decoration: InputDecoration(
                     hintText: 'Search projects by name or category...',
-                    prefixIcon: const Icon(Icons.search, size: AppSpacing.iconMd),
+                    prefixIcon: const Icon(Icons.search_outlined, size: AppSpacing.iconMd),
                     suffixIcon: searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear, size: AppSpacing.iconMd),
+                            icon: const Icon(Icons.close, size: AppSpacing.iconMd),
                             onPressed: () => onSearchChanged(''),
                           )
                         : null,
@@ -71,7 +71,7 @@ class SearchFilterBar extends StatelessWidget {
                   decoration: InputDecoration(
                     labelText: 'Category',
                     labelStyle: AppTextStyles.label,
-                    prefixIcon: const Icon(Icons.category, size: AppSpacing.iconMd),
+                    prefixIcon: const Icon(Icons.folder_outlined, size: AppSpacing.iconMd),
                     contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 0),
                   ),
                   items: [
@@ -102,7 +102,7 @@ class SearchFilterBar extends StatelessWidget {
                   decoration: InputDecoration(
                     labelText: 'Status',
                     labelStyle: AppTextStyles.label,
-                    prefixIcon: const Icon(Icons.flag, size: AppSpacing.iconMd),
+                    prefixIcon: const Icon(Icons.outlined_flag, size: AppSpacing.iconMd),
                     contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 0),
                   ),
                   items: AppConstants.projectStatuses.map(
@@ -138,7 +138,7 @@ class SearchFilterBar extends StatelessWidget {
                 const SizedBox(width: AppSpacing.md),
                 TextButton.icon(
                   onPressed: onClearFilters,
-                  icon: const Icon(Icons.clear_all),
+                  icon: const Icon(Icons.clear_all_outlined),
                   label: const Text('Clear'),
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.textSecondary,

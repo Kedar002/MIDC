@@ -37,22 +37,22 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   final List<Map<String, dynamic>> _tabs = [
     {
       'title': 'DPR',
-      'icon': Icons.description,
+      'icon': Icons.description_outlined,
       'tooltip': 'Detailed Project Report',
     },
     {
       'title': 'Work',
-      'icon': Icons.work,
+      'icon': Icons.work_outline,
       'tooltip': 'Work Process',
     },
     {
       'title': 'Monitoring',
-      'icon': Icons.analytics,
+      'icon': Icons.analytics_outlined,
       'tooltip': 'Project Monitoring',
     },
     {
       'title': 'Work Entry',
-      'icon': Icons.edit_note,
+      'icon': Icons.edit_note_outlined,
       'tooltip': 'Work Entry Details',
     },
   ];
