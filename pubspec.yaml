@@ -1,5 +1,5 @@
 name: flutter_desktop_demo
-description: "A new Flutter project."
+description: "MSIDC Project Management System - Desktop application for managing projects, DPR tracking, and monitoring."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
