@@ -257,13 +257,34 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
           children: [
-            Text(AppConstants.appName, style: AppTextStyles.h5),
-            Text(
-              AppConstants.appFullName,
-              style: AppTextStyles.caption,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.primary, AppColors.accent],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.business_outlined,
+                color: AppColors.textInverse,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppConstants.appName, style: AppTextStyles.h5),
+                Text(
+                  AppConstants.appFullName,
+                  style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
+                ),
+              ],
             ),
           ],
         ),

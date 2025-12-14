@@ -34,18 +34,26 @@ class ProjectCard extends StatelessWidget {
                       vertical: AppSpacing.xxs,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
-                      border: Border.all(
-                        color: AppTheme.getCategoryColor(project.category),
-                        width: 1,
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.getCategoryColor(project.category),
+                          AppTheme.getCategoryColor(project.category).withOpacity(0.8),
+                        ],
                       ),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.getCategoryColor(project.category).withOpacity(0.3),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Text(
                       'Category ${project.category}',
                       style: AppTextStyles.captionSmall.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.getCategoryColor(project.category),
+                        color: AppColors.textInverse,
                       ),
                     ),
                   ),
@@ -56,8 +64,12 @@ class ProjectCard extends StatelessWidget {
                       vertical: AppSpacing.xxs,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.getStatusColor(project.status).withOpacity(0.1),
+                      color: AppTheme.getStatusColor(project.status).withOpacity(0.15),
                       borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                      border: Border.all(
+                        color: AppTheme.getStatusColor(project.status).withOpacity(0.5),
+                        width: 1,
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -74,7 +86,7 @@ class ProjectCard extends StatelessWidget {
                         Text(
                           project.status,
                           style: AppTextStyles.captionSmall.copyWith(
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                             color: AppTheme.getStatusColor(project.status),
                           ),
                         ),
@@ -91,15 +103,26 @@ class ProjectCard extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppTheme.getCategoryColor(project.category).withOpacity(0.1),
+                          AppTheme.getCategoryColor(project.category).withOpacity(0.05),
+                        ],
+                      ),
                       borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                      border: Border.all(color: AppColors.border, width: 1),
+                      border: Border.all(
+                        color: AppTheme.getCategoryColor(project.category).withOpacity(0.3),
+                        width: 1.5,
+                      ),
                     ),
                     child: Center(
                       child: Text(
                         '${project.srNo}',
                         style: AppTextStyles.h6.copyWith(
-                          color: AppColors.textPrimary,
+                          color: AppTheme.getCategoryColor(project.category),
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -157,9 +180,9 @@ class ProjectCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
                                 child: LinearProgressIndicator(
                                   value: project.overallProgress / 100,
-                                  backgroundColor: AppColors.surface,
+                                  backgroundColor: AppTheme.getCategoryColor(project.category).withOpacity(0.1),
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppTheme.getStatusColor(project.status),
+                                    AppTheme.getCategoryColor(project.category),
                                   ),
                                   minHeight: 6,
                                 ),

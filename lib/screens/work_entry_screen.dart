@@ -145,8 +145,24 @@ class WorkEntryScreenState extends State<WorkEntryScreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: statusColor.withOpacity(0.1),
+                      leading: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              statusColor.withOpacity(0.2),
+                              statusColor.withOpacity(0.1),
+                            ],
+                          ),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: statusColor.withOpacity(0.4),
+                            width: 2,
+                          ),
+                        ),
                         child: Icon(
                           statusIcon,
                           color: statusColor,

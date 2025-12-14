@@ -208,17 +208,33 @@ class AppTheme {
   static Color getCategoryColor(String category) {
     switch (category) {
       case 'A':
-        return AppColors.primary;
+        return AppColors.categoryA;
       case 'B':
-        return AppColors.success;
+        return AppColors.categoryB;
       case 'C':
-        return AppColors.warning;
+        return AppColors.categoryC;
       case 'D':
-        return AppColors.info;
+        return AppColors.categoryD;
       case 'E':
-        return AppColors.accent;
+        return AppColors.categoryE;
       default:
-        return AppColors.textSecondary;
+        return AppColors.categoryDefault;
     }
+  }
+
+  static Color getCategoryColorByName(String categoryName) {
+    // Map category names to colors
+    if (categoryName.contains('Nashik') || categoryName.contains('Kumbhmela')) {
+      return AppColors.categoryA;
+    } else if (categoryName.contains('HAM')) {
+      return AppColors.categoryB;
+    } else if (categoryName.contains('Nagpur')) {
+      return AppColors.categoryC;
+    } else if (categoryName.contains('NHAI')) {
+      return AppColors.categoryD;
+    } else if (categoryName.contains('Other')) {
+      return AppColors.categoryE;
+    }
+    return AppColors.categoryDefault;
   }
 }

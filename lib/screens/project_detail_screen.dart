@@ -339,22 +339,34 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                             vertical: AppSpacing.xxs,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: AppTheme.getStatusColor(widget.project.status).withOpacity(0.1),
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                AppTheme.getStatusColor(widget.project.status).withOpacity(0.2),
+                                                AppTheme.getStatusColor(widget.project.status).withOpacity(0.1),
+                                              ],
+                                            ),
                                             borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                                             border: Border.all(
-                                              color: AppTheme.getStatusColor(widget.project.status),
-                                              width: 1,
+                                              color: AppTheme.getStatusColor(widget.project.status).withOpacity(0.5),
+                                              width: 1.5,
                                             ),
                                           ),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Container(
-                                                width: 5,
-                                                height: 5,
+                                                width: 6,
+                                                height: 6,
                                                 decoration: BoxDecoration(
                                                   color: AppTheme.getStatusColor(widget.project.status),
                                                   shape: BoxShape.circle,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: AppTheme.getStatusColor(widget.project.status).withOpacity(0.5),
+                                                      blurRadius: 4,
+                                                      spreadRadius: 1,
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                               SizedBox(width: AppSpacing.xs),
@@ -363,7 +375,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                                   widget.project.status,
                                                   style: AppTextStyles.captionSmall.copyWith(
                                                     color: AppTheme.getStatusColor(widget.project.status),
-                                                    fontWeight: FontWeight.w600,
+                                                    fontWeight: FontWeight.w700,
                                                   ),
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis,

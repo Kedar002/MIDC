@@ -348,15 +348,19 @@ class MonitoringScreenState extends State<MonitoringScreen> {
               ],
             ),
             SizedBox(height: AppSpacing.xs),
-            LinearProgressIndicator(
-              value: progress / 100,
-              backgroundColor: AppColors.surface,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                progress == 0
-                    ? AppColors.warning
-                    : progress == 100
-                        ? AppColors.success
-                        : AppColors.info,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
+              child: LinearProgressIndicator(
+                value: progress / 100,
+                backgroundColor: AppColors.surface,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  progress == 0
+                      ? AppColors.warning
+                      : progress == 100
+                          ? AppColors.success
+                          : AppColors.accentCyan,
+                ),
+                minHeight: 6,
               ),
             ),
           ],
