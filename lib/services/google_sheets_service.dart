@@ -1,7 +1,9 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io' show File, Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:csv/csv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import '../models/project.dart';
@@ -14,10 +16,82 @@ class GoogleSheetsService {
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
   final DateFormat _altDateFormat = DateFormat('M/d/yy');
 
-  // Get config file path
+  static const String _sheetUrlKey = 'google_sheet_url';
+  static const String _sheetIdKey = 'google_sheet_id';
+  static const String _isPublishedKey = 'google_sheet_is_published';
+
+  // Platform-aware storage: SharedPreferences for web, File for desktop
+  Future<void> _saveToStorage(String key, String value) async {
+    if (kIsWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(key, value);
+    } else {
+      final file = await _getConfigFile();
+      final config = await _loadConfigFromFile();
+      config[key] = value;
+      await file.writeAsString(json.encode(config));
+    }
+  }
+
+  Future<void> _saveBoolToStorage(String key, bool value) async {
+    if (kIsWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(key, value);
+    } else {
+      final file = await _getConfigFile();
+      final config = await _loadConfigFromFile();
+      config[key] = value;
+      await file.writeAsString(json.encode(config));
+    }
+  }
+
+  Future<String?> _getFromStorage(String key) async {
+    if (kIsWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(key);
+    } else {
+      final config = await _loadConfigFromFile();
+      return config[key] as String?;
+    }
+  }
+
+  Future<bool> _getBoolFromStorage(String key) async {
+    if (kIsWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(key) ?? false;
+    } else {
+      final config = await _loadConfigFromFile();
+      return config[key] as bool? ?? false;
+    }
+  }
+
+  Future<void> _removeFromStorage(String key) async {
+    if (kIsWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(key);
+    } else {
+      final file = await _getConfigFile();
+      final config = await _loadConfigFromFile();
+      config.remove(key);
+      await file.writeAsString(json.encode(config));
+    }
+  }
+
+  // File storage for desktop platforms
   Future<File> _getConfigFile() async {
     final directory = await getApplicationDocumentsDirectory();
     return File('${directory.path}/google_sheet_config.json');
+  }
+
+  Future<Map<String, dynamic>> _loadConfigFromFile() async {
+    try {
+      final file = await _getConfigFile();
+      if (!await file.exists()) return {};
+      final contents = await file.readAsString();
+      return json.decode(contents) as Map<String, dynamic>;
+    } catch (e) {
+      return {};
+    }
   }
 
   // Save connected Google Sheet URL
@@ -29,14 +103,9 @@ class GoogleSheetsService {
       throw Exception('Invalid Google Sheets URL');
     }
 
-    final file = await _getConfigFile();
-    final config = {
-      'sheetUrl': sheetUrl,
-      'sheetId': sheetId,
-      'isPublished': isPublished,
-    };
-
-    await file.writeAsString(json.encode(config));
+    await _saveToStorage(_sheetUrlKey, sheetUrl);
+    await _saveToStorage(_sheetIdKey, sheetId);
+    await _saveBoolToStorage(_isPublishedKey, isPublished);
   }
 
   // Check if URL is a published URL
@@ -44,15 +113,22 @@ class GoogleSheetsService {
     return url.contains('/pub?output=csv') || url.contains('/d/e/2PACX-');
   }
 
+  // Extract actual GIDs from edit URL if available
+  Future<Map<String, String>> _getActualSheetGids(String sheetUrl) async {
+    // For now, return default GIDs - we'll fetch them dynamically later
+    // The sheets should be in order: DPR (0), Work (1), Monitoring (2), Work Entry (3)
+    return {
+      'DPR': '0',
+      'Work': '1',
+      'Monitoring': '2',
+      'Work Entry': '3',
+    };
+  }
+
   // Get connected Google Sheet URL
   Future<String?> getConnectedSheetUrl() async {
     try {
-      final file = await _getConfigFile();
-      if (!await file.exists()) return null;
-
-      final contents = await file.readAsString();
-      final config = json.decode(contents) as Map<String, dynamic>;
-      return config['sheetUrl'] as String?;
+      return await _getFromStorage(_sheetUrlKey);
     } catch (e) {
       return null;
     }
@@ -61,12 +137,7 @@ class GoogleSheetsService {
   // Get connected Google Sheet ID
   Future<String?> getConnectedSheetId() async {
     try {
-      final file = await _getConfigFile();
-      if (!await file.exists()) return null;
-
-      final contents = await file.readAsString();
-      final config = json.decode(contents) as Map<String, dynamic>;
-      return config['sheetId'] as String?;
+      return await _getFromStorage(_sheetIdKey);
     } catch (e) {
       return null;
     }
@@ -75,12 +146,7 @@ class GoogleSheetsService {
   // Check if connected sheet is published URL
   Future<bool> _isConnectedSheetPublished() async {
     try {
-      final file = await _getConfigFile();
-      if (!await file.exists()) return false;
-
-      final contents = await file.readAsString();
-      final config = json.decode(contents) as Map<String, dynamic>;
-      return config['isPublished'] as bool? ?? false;
+      return await _getBoolFromStorage(_isPublishedKey);
     } catch (e) {
       return false;
     }
@@ -89,10 +155,9 @@ class GoogleSheetsService {
   // Disconnect Google Sheet
   Future<void> disconnectSheet() async {
     try {
-      final file = await _getConfigFile();
-      if (await file.exists()) {
-        await file.delete();
-      }
+      await _removeFromStorage(_sheetUrlKey);
+      await _removeFromStorage(_sheetIdKey);
+      await _removeFromStorage(_isPublishedKey);
     } catch (e) {
       // Ignore errors
     }
@@ -110,13 +175,19 @@ class GoogleSheetsService {
     if (url.contains('/d/e/2PACX-')) {
       final regex = RegExp(r'/d/e/(2PACX-[a-zA-Z0-9-_]+)');
       final match = regex.firstMatch(url);
-      return match?.group(1);
+      if (match != null) {
+        return match.group(1);
+      }
     }
 
     // Edit URL format: https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit...
     final regex = RegExp(r'/spreadsheets/d/([a-zA-Z0-9-_]+)');
     final match = regex.firstMatch(url);
-    return match?.group(1);
+    if (match != null) {
+      return match.group(1);
+    }
+
+    return null;
   }
 
   // Get GID (sheet tab ID) from sheet name
@@ -140,19 +211,37 @@ class GoogleSheetsService {
     final projects = <Project>[];
     final projectMap = <String, Project>{};
 
-    // Read all sheets
-    await _readDPRSheet(sheetId, projectMap);
-    await _readWorkSheet(sheetId, projectMap);
-    await _readMonitoringSheet(sheetId, projectMap);
-    await _readWorkEntrySheet(sheetId, projectMap);
+    try {
+      // Read all sheets
+      await _readDPRSheet(sheetId, projectMap);
+      await _readWorkSheet(sheetId, projectMap);
+      await _readMonitoringSheet(sheetId, projectMap);
+      await _readWorkEntrySheet(sheetId, projectMap);
+    } catch (e) {
+      // Add more context to the error
+      throw Exception('Failed to sync sheets: $e\n\nMake sure your sheet is published to web:\nFile → Share → Publish to web → Entire Document → CSV');
+    }
 
     projects.addAll(projectMap.values);
+
+    if (projects.isEmpty) {
+      throw Exception('No projects found in Google Sheet. Please check:\n1. Sheet is published to web\n2. Sheet has data in the expected format');
+    }
+
     return projects;
   }
 
   Future<void> _readDPRSheet(String sheetId, Map<String, Project> projectMap) async {
-    final csvData = await _fetchSheetAsCSV(sheetId, '0'); // DPR is first sheet
+    // Fetch DPR sheet with correct GID
+    String csvData;
+    try {
+      csvData = await _fetchSheetAsCSV(sheetId, '1015103094');
+    } catch (e) {
+      print('Error fetching DPR sheet: $e');
+      rethrow;
+    }
     final rows = const CsvToListConverter().convert(csvData);
+    print('DPR Sheet: Found ${rows.length} rows');
 
     // Skip header rows (0-1)
     for (int rowIndex = 2; rowIndex < rows.length; rowIndex++) {
@@ -206,25 +295,53 @@ class GoogleSheetsService {
   }
 
   Future<void> _readWorkSheet(String sheetId, Map<String, Project> projectMap) async {
-    try {
-      final csvData = await _fetchSheetAsCSV(sheetId, '826936467'); // Work sheet GID
-      final rows = const CsvToListConverter().convert(csvData);
-      await _processWorkSheet(rows, projectMap);
-    } catch (e) {
-      // If GID doesn't exist, try alternative GIDs or skip
+    print('Attempting to read Work sheet...');
+
+    // Use the correct GID for Work sheet
+    final possibleGids = ['1125535582'];
+
+    for (final gid in possibleGids) {
       try {
-        final csvData = await _fetchSheetAsCSV(sheetId, '1'); // Try GID 1
+        print('Trying Work sheet with GID $gid...');
+        final csvData = await _fetchSheetAsCSV(sheetId, gid);
         final rows = const CsvToListConverter().convert(csvData);
-        await _processWorkSheet(rows, projectMap);
+
+        print('Work sheet: Fetched ${rows.length} rows');
+        if (rows.length > 2) {
+          print('Work sheet Row 2: ${rows[2]}');
+        }
+
+        // Check if this looks like the Work sheet (headers in row 2: Sr No., Name of Work, AA, DPR, TS...)
+        if (rows.length > 2 && rows[2].length > 3) {
+          final headers = rows[2].toString().toLowerCase();
+          print('Work sheet headers (row 2) lowercase: $headers');
+          print('Contains aa: ${headers.contains('aa')}');
+          print('Contains bid doc: ${headers.contains('bid doc')}');
+
+          if (headers.contains('aa') && headers.contains('bid doc')) {
+            print('Work sheet GID $gid fetched successfully');
+            await _processWorkSheet(rows, projectMap);
+            return; // Success, exit
+          } else {
+            print('Work sheet header validation failed');
+          }
+        } else {
+          print('Work sheet has insufficient rows');
+        }
       } catch (e) {
-        // Skip if sheet not found
+        print('Work sheet GID $gid failed with exception: $e');
+        continue;
       }
     }
+
+    print('WARNING: Work sheet could not be read with any known GID. All workData will be null.');
   }
 
   Future<void> _processWorkSheet(List<List<dynamic>> rows, Map<String, Project> projectMap) async {
+    print('Work Sheet: Found ${rows.length} rows');
 
-    for (int rowIndex = 2; rowIndex < rows.length; rowIndex++) {
+    // Skip row 0 (empty), row 1 (headers), row 2 (responsible persons or category headers)
+    for (int rowIndex = 3; rowIndex < rows.length; rowIndex++) {
       final row = rows[rowIndex];
 
       if (row.isEmpty || row[0] == null || row[0].toString().trim().isEmpty) continue;
@@ -263,25 +380,50 @@ class GoogleSheetsService {
   }
 
   Future<void> _readMonitoringSheet(String sheetId, Map<String, Project> projectMap) async {
-    try {
-      final csvData = await _fetchSheetAsCSV(sheetId, '1887514139'); // Monitoring sheet GID
-      final rows = const CsvToListConverter().convert(csvData);
-      await _processMonitoringSheet(rows, projectMap);
-    } catch (e) {
-      // Try alternative GIDs
+    print('Attempting to read Monitoring sheet...');
+
+    // Use the correct GID for Monitoring sheet
+    final possibleGids = ['658079950'];
+
+    for (final gid in possibleGids) {
       try {
-        final csvData = await _fetchSheetAsCSV(sheetId, '2'); // Try GID 2
+        print('Trying Monitoring sheet with GID $gid...');
+        final csvData = await _fetchSheetAsCSV(sheetId, gid);
         final rows = const CsvToListConverter().convert(csvData);
-        await _processMonitoringSheet(rows, projectMap);
+
+        print('Monitoring sheet: Fetched ${rows.length} rows');
+        if (rows.length > 2) {
+          print('Monitoring Row 0: ${rows[0]}');
+          print('Monitoring Row 1: ${rows[1]}');
+          print('Monitoring Row 2: ${rows[2]}');
+        }
+
+        // Check if this looks like the Monitoring sheet (headers in row 2: Sr. No., Name of Work, Agmnt Amount...)
+        if (rows.length > 2 && rows[2].length > 3) {
+          final headers = rows[2].toString().toLowerCase();
+          print('Monitoring headers (row 2): $headers');
+          if (headers.contains('agmnt') || headers.contains('name of work')) {
+            print('Monitoring sheet GID $gid fetched successfully');
+            await _processMonitoringSheet(rows, projectMap);
+            return; // Success, exit
+          } else {
+            print('Monitoring header validation failed');
+          }
+        }
       } catch (e) {
-        // Skip if sheet not found
+        print('Monitoring sheet GID $gid failed: $e');
+        continue;
       }
     }
+
+    print('WARNING: Monitoring sheet could not be read with any known GID. All monitoringData will be null.');
   }
 
   Future<void> _processMonitoringSheet(List<List<dynamic>> rows, Map<String, Project> projectMap) async {
+    print('Monitoring Sheet: Found ${rows.length} rows');
 
-    for (int rowIndex = 2; rowIndex < rows.length; rowIndex++) {
+    // Skip row 0 (empty), row 1 (responsible persons), row 2 (headers)
+    for (int rowIndex = 3; rowIndex < rows.length; rowIndex++) {
       final row = rows[rowIndex];
 
       if (row.isEmpty || row[0] == null || row[0].toString().trim().isEmpty) continue;
@@ -323,20 +465,34 @@ class GoogleSheetsService {
   }
 
   Future<void> _readWorkEntrySheet(String sheetId, Map<String, Project> projectMap) async {
-    try {
-      final csvData = await _fetchSheetAsCSV(sheetId, '576848618'); // Work Entry sheet GID
-      final rows = const CsvToListConverter().convert(csvData);
-      await _processWorkEntrySheet(rows, projectMap);
-    } catch (e) {
-      // Try alternative GIDs
+    print('Attempting to read Work Entry sheet...');
+
+    // Use the correct GID for Work Entry sheet
+    final possibleGids = ['709182212'];
+
+    for (final gid in possibleGids) {
       try {
-        final csvData = await _fetchSheetAsCSV(sheetId, '3'); // Try GID 3
+        print('Trying Work Entry sheet with GID $gid...');
+        final csvData = await _fetchSheetAsCSV(sheetId, gid);
         final rows = const CsvToListConverter().convert(csvData);
-        await _processWorkEntrySheet(rows, projectMap);
+
+        // Check if this looks like the Work Entry sheet (row 0: Work Id, Name of Work; row 1: DPR, Particulars...)
+        if (rows.length > 2 && rows[0].isNotEmpty) {
+          final headers0 = rows[0].toString().toLowerCase();
+          final headers1 = rows.length > 1 ? rows[1].toString().toLowerCase() : '';
+          if (headers0.contains('work id') || headers1.contains('particulars')) {
+            print('Work Entry sheet GID $gid fetched successfully');
+            await _processWorkEntrySheet(rows, projectMap);
+            return; // Success, exit
+          }
+        }
       } catch (e) {
-        // Skip if sheet not found
+        print('Work Entry sheet GID $gid failed: $e');
+        continue;
       }
     }
+
+    print('WARNING: Work Entry sheet could not be read with any known GID. All workEntryActivities will be null.');
   }
 
   Future<void> _processWorkEntrySheet(List<List<dynamic>> rows, Map<String, Project> projectMap) async {
@@ -387,8 +543,16 @@ class GoogleSheetsService {
 
     String url;
     if (isPublished) {
-      // Published URL format: https://docs.google.com/spreadsheets/d/e/{PUBLISHED_ID}/pub?output=csv&gid={GID}
-      url = 'https://docs.google.com/spreadsheets/d/e/$sheetId/pub?output=csv&gid=$gid';
+      // For published sheets, we need to use a different approach
+      // The GID parameter doesn't work reliably with published URLs
+      // Instead, we'll use the single parameter format
+      if (gid == '0') {
+        // Default first sheet - use standard published URL
+        url = 'https://docs.google.com/spreadsheets/d/e/$sheetId/pub?output=csv';
+      } else {
+        // For other sheets, try with gid parameter
+        url = 'https://docs.google.com/spreadsheets/d/e/$sheetId/pub?gid=$gid&single=true&output=csv';
+      }
     } else {
       // Regular export format: https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={GID}
       url = 'https://docs.google.com/spreadsheets/d/$sheetId/export?format=csv&gid=$gid';
@@ -433,24 +597,57 @@ class GoogleSheetsService {
     final str = value.toString().trim();
     if (str.isEmpty || str == '--' || str == '') return null;
 
+    // Try different date formats in order of likelihood
+
+    // 1. Try M/d/yy format (e.g., 11/28/25) - most common in your sheet
+    if (str.contains('/') && str.split('/').length == 3) {
+      final parts = str.split('/');
+      if (parts[2].length == 2) {
+        // This is a M/d/yy format
+        try {
+          final parsed = _altDateFormat.parse(str);
+          // DateFormat might interpret 2-digit years correctly, but check
+          if (parsed.year < 100) {
+            final fullYear = parsed.year + 2000;
+            return DateTime(fullYear, parsed.month, parsed.day);
+          }
+          return parsed;
+        } catch (e) {
+          // Continue to next format
+        }
+      }
+    }
+
+    // 2. Try dd.MM.yyyy format (e.g., 09.12.2025)
+    if (str.contains('.')) {
+      try {
+        final dotFormat = DateFormat('dd.MM.yyyy');
+        return dotFormat.parse(str);
+      } catch (e) {
+        // Continue to next format
+      }
+    }
+
+    // 3. Try dd/MM/yyyy format
     try {
       return _dateFormat.parse(str);
     } catch (e) {
-      try {
-        return _altDateFormat.parse(str);
-      } catch (e) {
-        try {
-          final dateNum = double.tryParse(str);
-          if (dateNum != null) {
-            final baseDate = DateTime(1899, 12, 30);
-            return baseDate.add(Duration(days: dateNum.toInt()));
-          }
-        } catch (e) {
-          return null;
-        }
-        return null;
-      }
+      // Continue to next format
     }
+
+    // 4. Try Excel serial number
+    try {
+      final dateNum = double.tryParse(str);
+      if (dateNum != null && dateNum > 0 && dateNum < 100000) {
+        final baseDate = DateTime(1899, 12, 30);
+        return baseDate.add(Duration(days: dateNum.toInt()));
+      }
+    } catch (e) {
+      // Continue
+    }
+
+    print('Failed to parse date: $str');
+    return null;
   }
 
   double? _parseDouble(dynamic value) {

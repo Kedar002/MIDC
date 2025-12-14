@@ -37,9 +37,9 @@ class _MainScreenState extends State<MainScreen> {
         // Sync from Google Sheets
         await _syncFromGoogleSheets();
       } else {
-        // Load from local storage
+        // No sheet connected - start with empty projects
         if (mounted) {
-          context.read<DataService>().loadProjects();
+          context.read<DataService>().replaceAllProjects([]);
         }
       }
     });
@@ -59,15 +59,17 @@ class _MainScreenState extends State<MainScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Before connecting, publish your sheet to web:',
+                'Share your Google Sheet:',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               ),
               const SizedBox(height: 8),
               const Text(
                 '1. Open your Google Sheet\n'
-                '2. Go to File → Share → Publish to web\n'
-                '3. Select "Entire Document" + CSV format\n'
-                '4. Click "Publish"',
+                '2. Click "Share" button (top right)\n'
+                '3. Under "General access" select:\n'
+                '   "Anyone with the link" + "Viewer"\n'
+                '4. Click "Done"\n'
+                '5. Copy the URL from browser address bar',
                 style: TextStyle(fontSize: 12, color: Colors.black87),
               ),
               const SizedBox(height: 16),
@@ -75,8 +77,10 @@ class _MainScreenState extends State<MainScreen> {
               const SizedBox(height: 8),
               TextField(
                 controller: controller,
+                maxLines: 2,
                 decoration: const InputDecoration(
-                  hintText: 'https://docs.google.com/spreadsheets/d/...',
+                  hintText: 'https://docs.google.com/spreadsheets/d/.../edit...',
+                  border: OutlineInputBorder(),
                 ),
               ),
             ],
@@ -199,6 +203,12 @@ class _MainScreenState extends State<MainScreen> {
 
     if (confirm == true) {
       await _sheetsService.disconnectSheet();
+
+      // Clear all projects from DataService
+      if (mounted) {
+        context.read<DataService>().replaceAllProjects([]);
+      }
+
       setState(() {
         _connectedSheetUrl = null;
       });
@@ -206,7 +216,7 @@ class _MainScreenState extends State<MainScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Disconnected from Google Sheet'),
+            content: Text('Disconnected from Google Sheet and cleared all data'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -371,21 +381,25 @@ class _MainScreenState extends State<MainScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.folder_open,
+                              _connectedSheetUrl == null ? Icons.cloud_off : Icons.folder_open,
                               size: 64,
                               color: Colors.grey.shade400,
                             ),
                             const SizedBox(height: 16),
-                            const Text(
-                              'No projects found',
-                              style: TextStyle(
+                            Text(
+                              _connectedSheetUrl == null
+                                  ? 'No Google Sheet Connected'
+                                  : 'No projects found',
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Try adjusting your filters',
+                              _connectedSheetUrl == null
+                                  ? 'Click the link icon above to connect your Google Sheet'
+                                  : 'Try adjusting your filters or sync your sheet',
                               style: TextStyle(
                                 color: Colors.grey.shade600,
                               ),

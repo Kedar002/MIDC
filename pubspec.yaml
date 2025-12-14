@@ -50,6 +50,9 @@ dependencies:
   http: ^1.1.0
   csv: ^6.0.0
 
+  # For web-compatible storage
+  shared_preferences: ^2.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
