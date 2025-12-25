@@ -8,6 +8,8 @@ class CategoryCard extends StatelessWidget {
   final String categoryName;
   final int projectCount;
   final VoidCallback onTap;
+  final Color? customColor;
+  final IconData? customIcon;
 
   const CategoryCard({
     super.key,
@@ -15,9 +17,13 @@ class CategoryCard extends StatelessWidget {
     required this.categoryName,
     required this.projectCount,
     required this.onTap,
+    this.customColor,
+    this.customIcon,
   });
 
   Color _getCategoryColor() {
+    if (customColor != null) return customColor!;
+
     switch (categoryCode) {
       case 'A':
         return const Color(0xFF6366F1); // Indigo
@@ -35,6 +41,8 @@ class CategoryCard extends StatelessWidget {
   }
 
   IconData _getCategoryIcon() {
+    if (customIcon != null) return customIcon!;
+
     switch (categoryCode) {
       case 'A':
         return Icons.festival_outlined;

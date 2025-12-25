@@ -8,11 +8,13 @@ import '../theme/app_spacing.dart';
 class ProjectCard extends StatelessWidget {
   final Project project;
   final VoidCallback onTap;
+  final VoidCallback? onDelete;
 
   const ProjectCard({
     super.key,
     required this.project,
     required this.onTap,
+    this.onDelete,
   });
 
   @override
@@ -93,6 +95,29 @@ class ProjectCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (onDelete != null) ...[
+                    const SizedBox(width: AppSpacing.xs),
+                    InkWell(
+                      onTap: onDelete,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                      child: Container(
+                        padding: const EdgeInsets.all(AppSpacing.xxs),
+                        decoration: BoxDecoration(
+                          color: AppColors.errorLight,
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                          border: Border.all(
+                            color: AppColors.error.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.delete_outline,
+                          size: 16,
+                          color: AppColors.error,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
               const SizedBox(height: AppSpacing.md),

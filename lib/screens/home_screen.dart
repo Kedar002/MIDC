@@ -223,24 +223,73 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Map<String, int> _getCategoryCounts(List<dynamic> projects) {
+    final dataService = context.read<DataService>();
+    final allCategoryCodes = {
+      ...AppConstants.categories.keys,
+      ...dataService.customCategories.keys,
+    };
     final counts = <String, int>{};
-    for (var category in AppConstants.categories.keys) {
+    for (var category in allCategoryCodes) {
       counts[category] = projects.where((p) => p.category == category).length;
     }
     return counts;
   }
 
   List<String> _getFilteredCategories() {
+    final dataService = context.read<DataService>();
+    final allCategoryNames = {
+      ...AppConstants.categories,
+      ...dataService.customCategories.map((key, value) => MapEntry(key, value.name)),
+    };
+
     if (_searchQuery.isEmpty) {
-      return AppConstants.categories.keys.toList();
+      return allCategoryNames.keys.toList();
     }
 
     final lowercaseQuery = _searchQuery.toLowerCase();
-    return AppConstants.categories.keys.where((categoryCode) {
-      final categoryName = AppConstants.categories[categoryCode]!;
+    return allCategoryNames.keys.where((categoryCode) {
+      final categoryName = allCategoryNames[categoryCode]!;
       return categoryName.toLowerCase().contains(lowercaseQuery) ||
              categoryCode.toLowerCase().contains(lowercaseQuery);
     }).toList();
+  }
+
+  IconData _getIconFromName(String iconName) {
+    switch (iconName) {
+      case 'work_outline':
+        return Icons.work_outline;
+      case 'festival_outlined':
+        return Icons.festival_outlined;
+      case 'account_balance_outlined':
+        return Icons.account_balance_outlined;
+      case 'location_city_outlined':
+        return Icons.location_city_outlined;
+      case 'route_outlined':
+        return Icons.route_outlined;
+      case 'build_outlined':
+        return Icons.build_outlined;
+      case 'business_outlined':
+        return Icons.business_outlined;
+      case 'apartment_outlined':
+        return Icons.apartment_outlined;
+      case 'construction_outlined':
+        return Icons.construction_outlined;
+      case 'engineering_outlined':
+        return Icons.engineering_outlined;
+      case 'factory_outlined':
+        return Icons.factory_outlined;
+      case 'home_work_outlined':
+        return Icons.home_work_outlined;
+      default:
+        return Icons.folder_outlined;
+    }
+  }
+
+  Future<void> _handleAddCategory() async {
+    await showDialog(
+      context: context,
+      builder: (context) => _AddCategoryDialog(),
+    );
   }
 
   @override
@@ -365,6 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final categoryCounts = _getCategoryCounts(dataService.projects);
           final totalProjects = dataService.projects.length;
           final filteredCategories = _getFilteredCategories();
+          final totalCategories = AppConstants.categories.length + dataService.customCategories.length;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,12 +447,29 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(width: AppSpacing.xl),
                               Text(
-                                '$totalProjects total projects across ${AppConstants.categories.length} categories',
+                                '$totalProjects total projects across $totalCategories categories',
                                 style: AppTextStyles.body.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
                               ),
                             ],
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: _handleAddCategory,
+                          icon: const Icon(Icons.add_outlined, size: 18),
+                          label: const Text('New Category'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.textInverse,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.sm,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                         ),
                       ],
@@ -538,8 +605,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             itemCount: filteredCategories.length,
                             itemBuilder: (context, index) {
                               final categoryCode = filteredCategories[index];
-                              final categoryName = AppConstants.categories[categoryCode]!;
+                              final categoryName = AppConstants.categories[categoryCode] ??
+                                  dataService.customCategories[categoryCode]?.name ??
+                                  'Unknown';
                               final projectCount = categoryCounts[categoryCode] ?? 0;
+
+                              // Get custom color and icon if it's a custom category
+                              Color? customColor;
+                              IconData? customIcon;
+                              if (dataService.customCategories.containsKey(categoryCode)) {
+                                final categoryInfo = dataService.customCategories[categoryCode]!;
+                                customColor = Color(int.parse(categoryInfo.colorHex.substring(1), radix: 16) + 0xFF000000);
+                                // Map icon name to IconData
+                                customIcon = _getIconFromName(categoryInfo.iconName);
+                              }
 
                               return CategoryCard(
                                 categoryCode: categoryCode,
@@ -556,6 +635,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   );
                                 },
+                                customColor: customColor,
+                                customIcon: customIcon,
                               );
                             },
                           ),
@@ -563,6 +644,253 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _AddCategoryDialog extends StatefulWidget {
+  @override
+  State<_AddCategoryDialog> createState() => _AddCategoryDialogState();
+}
+
+class _AddCategoryDialogState extends State<_AddCategoryDialog> {
+  final nameController = TextEditingController();
+  String selectedColor = '#6366F1';
+  String selectedIcon = 'work_outline';
+
+  final availableColors = [
+    {'name': 'Indigo', 'hex': '#6366F1'},
+    {'name': 'Purple', 'hex': '#8B5CF6'},
+    {'name': 'Cyan', 'hex': '#06B6D4'},
+    {'name': 'Green', 'hex': '#10B981'},
+    {'name': 'Amber', 'hex': '#F59E0B'},
+    {'name': 'Pink', 'hex': '#EC4899'},
+    {'name': 'Red', 'hex': '#EF4444'},
+    {'name': 'Blue', 'hex': '#3B82F6'},
+    {'name': 'Emerald', 'hex': '#10B981'},
+    {'name': 'Orange', 'hex': '#F97316'},
+  ];
+
+  final availableIcons = [
+    {'name': 'work_outline', 'icon': Icons.work_outline},
+    {'name': 'festival_outlined', 'icon': Icons.festival_outlined},
+    {'name': 'account_balance_outlined', 'icon': Icons.account_balance_outlined},
+    {'name': 'location_city_outlined', 'icon': Icons.location_city_outlined},
+    {'name': 'route_outlined', 'icon': Icons.route_outlined},
+    {'name': 'build_outlined', 'icon': Icons.build_outlined},
+    {'name': 'business_outlined', 'icon': Icons.business_outlined},
+    {'name': 'apartment_outlined', 'icon': Icons.apartment_outlined},
+    {'name': 'construction_outlined', 'icon': Icons.construction_outlined},
+    {'name': 'engineering_outlined', 'icon': Icons.engineering_outlined},
+    {'name': 'factory_outlined', 'icon': Icons.factory_outlined},
+    {'name': 'home_work_outlined', 'icon': Icons.home_work_outlined},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        width: 500,
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.primary, AppColors.accent],
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.add_outlined,
+                      color: AppColors.textInverse,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Text('Add New Category', style: AppTextStyles.h4),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Text('Category Name', style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.xs),
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  hintText: 'e.g., Special Projects',
+                  hintStyle: AppTextStyles.body.copyWith(
+                    color: AppColors.textTertiary,
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text('Border Color', style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.sm),
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: availableColors.map((colorData) {
+                  final isSelected = selectedColor == colorData['hex'] as String?;
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedColor = colorData['hex']! as String;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Color(int.parse((colorData['hex']! as String).substring(1), radix: 16) + 0xFF000000),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected ? AppColors.textPrimary : AppColors.border,
+                          width: isSelected ? 3 : 1,
+                        ),
+                      ),
+                      child: isSelected
+                          ? const Icon(Icons.check, color: Colors.white, size: 24)
+                          : null,
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text('Icon', style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.sm),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 6,
+                    mainAxisSpacing: AppSpacing.xs,
+                    crossAxisSpacing: AppSpacing.xs,
+                  ),
+                  itemCount: availableIcons.length,
+                  itemBuilder: (context, index) {
+                    final iconData = availableIcons[index];
+                    final isSelected = selectedIcon == iconData['name'] as String?;
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          selectedIcon = iconData['name']! as String;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Color(int.parse(selectedColor.substring(1), radix: 16) + 0xFF000000).withOpacity(0.1)
+                              : AppColors.surface,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isSelected
+                                ? Color(int.parse(selectedColor.substring(1), radix: 16) + 0xFF000000)
+                                : AppColors.border,
+                            width: isSelected ? 2 : 1,
+                          ),
+                        ),
+                        child: Icon(
+                          iconData['icon'] as IconData,
+                          color: isSelected
+                              ? Color(int.parse(selectedColor.substring(1), radix: 16) + 0xFF000000)
+                              : AppColors.textSecondary,
+                          size: 24,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (nameController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please enter a category name'),
+                            backgroundColor: AppColors.error,
+                          ),
+                        );
+                        return;
+                      }
+
+                      final dataService = context.read<DataService>();
+                      final code = dataService.getNextCategoryCode();
+
+                      dataService.addCustomCategory(
+                        code,
+                        CategoryInfo(
+                          name: nameController.text,
+                          colorHex: selectedColor,
+                          iconName: selectedIcon,
+                        ),
+                      );
+
+                      Navigator.pop(context);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Category "${nameController.text}" added successfully'),
+                          backgroundColor: AppColors.success,
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.textInverse,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.sm,
+                      ),
+                    ),
+                    child: const Text('Add Category'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

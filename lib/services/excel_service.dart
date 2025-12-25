@@ -60,10 +60,10 @@ class ExcelService {
     for (int rowIndex = 2; rowIndex < sheet.maxRows; rowIndex++) {
       final row = sheet.rows[rowIndex];
 
-      // Skip category headers (A, B, C, D, E)
+      // Skip category headers (single letters)
       final firstCell = row[0]?.value;
       if (firstCell == null || firstCell.toString().trim().isEmpty) continue;
-      if (firstCell.toString().length == 1 && RegExp(r'[A-E]').hasMatch(firstCell.toString())) continue;
+      if (firstCell.toString().length == 1 && RegExp(r'[A-Z]').hasMatch(firstCell.toString())) continue;
 
       final projectName = row[1]?.value?.toString().trim();
       if (projectName == null || projectName.isEmpty) continue;
@@ -162,7 +162,7 @@ class ExcelService {
 
       final firstCell = row[0]?.value;
       if (firstCell == null || firstCell.toString().trim().isEmpty) continue;
-      if (firstCell.toString().length == 1 && RegExp(r'[A-E]').hasMatch(firstCell.toString())) continue;
+      if (firstCell.toString().length == 1 && RegExp(r'[A-Z]').hasMatch(firstCell.toString())) continue;
 
       final projectName = row[1]?.value?.toString().trim();
       if (projectName == null || projectName.isEmpty) continue;
@@ -204,7 +204,7 @@ class ExcelService {
 
       final firstCell = row[0]?.value;
       if (firstCell == null || firstCell.toString().trim().isEmpty) continue;
-      if (firstCell.toString().length == 1 && RegExp(r'[A-E]').hasMatch(firstCell.toString())) continue;
+      if (firstCell.toString().length == 1 && RegExp(r'[A-Z]').hasMatch(firstCell.toString())) continue;
 
       final projectName = row[1]?.value?.toString().trim();
       if (projectName == null || projectName.isEmpty) continue;
@@ -357,27 +357,27 @@ class ExcelService {
   }
 
   String _getCategory(int rowIndex, Sheet sheet) {
-    // Find the last category header (A, B, C, D, E) before this row
+    // Find the last category header (any single letter) before this row
     for (int i = rowIndex - 1; i >= 0; i--) {
       final cell = sheet.rows[i][0]?.value?.toString();
-      if (cell != null && cell.length == 1 && RegExp(r'[A-E]').hasMatch(cell)) {
-        return cell; // Return the category key (A, B, C, D, E)
+      if (cell != null && cell.length == 1 && RegExp(r'[A-Z]').hasMatch(cell)) {
+        return cell; // Return the category key
       }
     }
     return 'Uncategorized';
   }
 
   // Export projects to Excel
-  Future<String> exportExcel(List<Project> projects) async {
+  Future<String> exportExcel(List<Project> projects, {Map<String, dynamic>? customCategories}) async {
     final excel = Excel.createExcel();
 
     // Remove default sheet
     excel.delete('Sheet1');
 
-    // Create sheets
-    _createDPRSheet(excel, projects);
-    _createWorkSheet(excel, projects);
-    _createMonitoringSheet(excel, projects);
+    // Create sheets with custom categories
+    _createDPRSheet(excel, projects, customCategories);
+    _createWorkSheet(excel, projects, customCategories);
+    _createMonitoringSheet(excel, projects, customCategories);
     _createWorkEntrySheet(excel, projects);
 
     // Save file
@@ -391,8 +391,18 @@ class ExcelService {
     return filePath;
   }
 
-  void _createDPRSheet(Excel excel, List<Project> projects) {
+  void _createDPRSheet(Excel excel, List<Project> projects, Map<String, dynamic>? customCategories) {
     final sheet = excel['DPR'];
+    // Merge default categories with custom category names
+    final customCategoryNames = customCategories?.map((key, value) {
+      if (value is Map<String, dynamic> && value.containsKey('name')) {
+        return MapEntry(key, value['name'] as String);
+      } else if (value is String) {
+        return MapEntry(key, value);
+      }
+      return MapEntry(key, 'Unknown');
+    }) ?? {};
+    final allCategories = {...AppConstants.categories, ...customCategoryNames};
 
     // Header row 1 - Column names
     final headers = [
@@ -418,7 +428,7 @@ class ExcelService {
         ..value = TextCellValue(_getCategoryLetter(category))
         ..cellStyle = CellStyle(bold: true);
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowIndex))
-        ..value = TextCellValue(AppConstants.categories[category] ?? category)
+        ..value = TextCellValue(allCategories[category] ?? category)
         ..cellStyle = CellStyle(bold: true);
       rowIndex++;
 
@@ -455,8 +465,18 @@ class ExcelService {
     });
   }
 
-  void _createWorkSheet(Excel excel, List<Project> projects) {
+  void _createWorkSheet(Excel excel, List<Project> projects, Map<String, dynamic>? customCategories) {
     final sheet = excel['Work'];
+    // Merge default categories with custom category names
+    final customCategoryNames = customCategories?.map((key, value) {
+      if (value is Map<String, dynamic> && value.containsKey('name')) {
+        return MapEntry(key, value['name'] as String);
+      } else if (value is String) {
+        return MapEntry(key, value);
+      }
+      return MapEntry(key, 'Unknown');
+    }) ?? {};
+    final allCategories = {...AppConstants.categories, ...customCategoryNames};
 
     final headers = [
       'Sr No.', 'Name of Work', 'AA', 'DPR', 'TS', 'Bid Doc', 'Bid Invite',
@@ -477,7 +497,7 @@ class ExcelService {
         ..value = TextCellValue(_getCategoryLetter(category))
         ..cellStyle = CellStyle(bold: true);
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowIndex))
-        ..value = TextCellValue(AppConstants.categories[category] ?? category)
+        ..value = TextCellValue(allCategories[category] ?? category)
         ..cellStyle = CellStyle(bold: true);
       rowIndex++;
 
@@ -507,8 +527,18 @@ class ExcelService {
     });
   }
 
-  void _createMonitoringSheet(Excel excel, List<Project> projects) {
+  void _createMonitoringSheet(Excel excel, List<Project> projects, Map<String, dynamic>? customCategories) {
     final sheet = excel['Monitoring'];
+    // Merge default categories with custom category names
+    final customCategoryNames = customCategories?.map((key, value) {
+      if (value is Map<String, dynamic> && value.containsKey('name')) {
+        return MapEntry(key, value['name'] as String);
+      } else if (value is String) {
+        return MapEntry(key, value);
+      }
+      return MapEntry(key, 'Unknown');
+    }) ?? {};
+    final allCategories = {...AppConstants.categories, ...customCategoryNames};
 
     final headers = [
       'Sr. No.', 'Name of Work', 'Agmnt Amount Rs. Crore', 'Appointed Date',
@@ -531,7 +561,7 @@ class ExcelService {
         ..value = TextCellValue(_getCategoryLetter(category))
         ..cellStyle = CellStyle(bold: true);
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowIndex))
-        ..value = TextCellValue(AppConstants.categories[category] ?? category)
+        ..value = TextCellValue(allCategories[category] ?? category)
         ..cellStyle = CellStyle(bold: true);
       rowIndex++;
 
@@ -657,8 +687,8 @@ class ExcelService {
   }
 
   String _getCategoryLetter(String category) {
-    // If category is already a letter (A, B, C, D, E), return it
-    if (category.length == 1 && RegExp(r'[A-E]').hasMatch(category)) {
+    // If category is already a single letter, return it (supports custom categories)
+    if (category.length == 1 && RegExp(r'[A-Z]').hasMatch(category)) {
       return category;
     }
     // For backward compatibility with full names
@@ -674,7 +704,7 @@ class ExcelService {
       case 'Other Projects':
         return 'E';
       default:
-        return 'F';
+        return category.isNotEmpty ? category[0].toUpperCase() : 'X';
     }
   }
 }

@@ -2,15 +2,42 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../models/project.dart';
+import '../utils/constants.dart';
+
+class CategoryInfo {
+  final String name;
+  final String colorHex;
+  final String iconName;
+
+  CategoryInfo({
+    required this.name,
+    required this.colorHex,
+    required this.iconName,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'colorHex': colorHex,
+    'iconName': iconName,
+  };
+
+  factory CategoryInfo.fromJson(Map<String, dynamic> json) => CategoryInfo(
+    name: json['name'],
+    colorHex: json['colorHex'],
+    iconName: json['iconName'],
+  );
+}
 
 class DataService with ChangeNotifier {
   List<Project> _projects = [];
   bool _isLoading = false;
   String? _error;
+  Map<String, CategoryInfo> _customCategories = {};
 
   List<Project> get projects => _projects;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  Map<String, CategoryInfo> get customCategories => _customCategories;
 
   Future<void> loadProjects() async {
     _isLoading = true;
@@ -94,6 +121,12 @@ class DataService with ChangeNotifier {
     saveProjectsToLocal();
   }
 
+  void deleteProject(String projectId) {
+    _projects.removeWhere((p) => p.id == projectId);
+    notifyListeners();
+    saveProjectsToLocal();
+  }
+
   void replaceAllProjects(List<Project> newProjects) {
     _projects = newProjects;
     notifyListeners();
@@ -104,6 +137,7 @@ class DataService with ChangeNotifier {
     try {
       final jsonData = {
         'projects': _projects.map((p) => p.toJson()).toList(),
+        'customCategories': _customCategories.map((key, value) => MapEntry(key, value.toJson())),
       };
       final jsonString = json.encode(jsonData);
       if (kDebugMode) {
@@ -114,5 +148,37 @@ class DataService with ChangeNotifier {
         print('Error saving projects: $e');
       }
     }
+  }
+
+  void addCustomCategory(String code, CategoryInfo categoryInfo) {
+    _customCategories[code] = categoryInfo;
+    notifyListeners();
+    saveProjectsToLocal();
+  }
+
+  void removeCustomCategory(String code) {
+    _customCategories.remove(code);
+    notifyListeners();
+    saveProjectsToLocal();
+  }
+
+  Map<String, CategoryInfo> getAllCategories() {
+    return {..._customCategories};
+  }
+
+  String getNextCategoryCode() {
+    // Get all existing codes
+    final existingCodes = {...AppConstants.categories.keys, ..._customCategories.keys}.toList();
+
+    // Find the next available letter starting from F
+    for (int i = 70; i <= 90; i++) { // ASCII codes for F-Z
+      final code = String.fromCharCode(i);
+      if (!existingCodes.contains(code)) {
+        return code;
+      }
+    }
+
+    // If all single letters are taken, use AA, AB, etc.
+    return 'AA';
   }
 }

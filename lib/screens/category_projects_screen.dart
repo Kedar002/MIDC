@@ -86,6 +86,47 @@ class _CategoryProjectsScreenState extends State<CategoryProjectsScreen> {
     });
   }
 
+  Future<void> _handleDeleteProject(Project project) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Project', style: AppTextStyles.h4),
+        content: Text(
+          'Are you sure you want to delete "${project.name}"? This action cannot be undone.',
+          style: AppTextStyles.body,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.textInverse,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final dataService = context.read<DataService>();
+      dataService.deleteProject(project.id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Project "${project.name}" deleted'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final categoryColor = _getCategoryColor();
@@ -327,6 +368,7 @@ class _CategoryProjectsScreenState extends State<CategoryProjectsScreen> {
                                 ),
                               );
                             },
+                            onDelete: () => _handleDeleteProject(project),
                           );
                         },
                       ),
