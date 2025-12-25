@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/data_service.dart';
-import 'screens/main_screen.dart';
+import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
 import 'utils/constants.dart';
 
@@ -20,7 +20,7 @@ class MSIDCApp extends StatelessWidget {
         title: AppConstants.appName,
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: const MainScreen(),
+        home: const HomeScreen(),
       ),
     );
   }
