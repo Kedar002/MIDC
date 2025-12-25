@@ -292,6 +292,89 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _handleDeleteCategory(String categoryCode, String categoryName) async {
+    final dataService = context.read<DataService>();
+    final projectsInCategory = dataService.projects
+        .where((p) => p.category == categoryCode)
+        .length;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Category', style: AppTextStyles.h4),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Are you sure you want to delete the category "$categoryName"?',
+              style: AppTextStyles.body,
+            ),
+            if (projectsInCategory > 0) ...[
+              const SizedBox(height: AppSpacing.md),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.warningLight,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.warning.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.warning_outlined,
+                      color: AppColors.warning,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        'This will also delete $projectsInCategory ${projectsInCategory == 1 ? 'project' : 'projects'} in this category.',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.warningDark,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.textInverse,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      dataService.removeCustomCategory(categoryCode);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Category "$categoryName" deleted'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -613,7 +696,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               // Get custom color and icon if it's a custom category
                               Color? customColor;
                               IconData? customIcon;
-                              if (dataService.customCategories.containsKey(categoryCode)) {
+                              final isCustomCategory = dataService.customCategories.containsKey(categoryCode);
+                              if (isCustomCategory) {
                                 final categoryInfo = dataService.customCategories[categoryCode]!;
                                 customColor = Color(int.parse(categoryInfo.colorHex.substring(1), radix: 16) + 0xFF000000);
                                 // Map icon name to IconData
@@ -637,6 +721,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                                 customColor: customColor,
                                 customIcon: customIcon,
+                                onDelete: isCustomCategory
+                                    ? () => _handleDeleteCategory(categoryCode, categoryName)
+                                    : null,
                               );
                             },
                           ),
@@ -711,7 +798,7 @@ class _AddCategoryDialogState extends State<_AddCategoryDialog> {
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
+                    child: const Icon( 
                       Icons.add_outlined,
                       color: AppColors.textInverse,
                       size: 20,

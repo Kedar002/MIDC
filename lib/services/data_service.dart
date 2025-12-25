@@ -158,6 +158,8 @@ class DataService with ChangeNotifier {
 
   void removeCustomCategory(String code) {
     _customCategories.remove(code);
+    // Also remove all projects in this category
+    _projects.removeWhere((p) => p.category == code);
     notifyListeners();
     saveProjectsToLocal();
   }

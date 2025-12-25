@@ -10,6 +10,7 @@ class CategoryCard extends StatelessWidget {
   final VoidCallback onTap;
   final Color? customColor;
   final IconData? customIcon;
+  final VoidCallback? onDelete;
 
   const CategoryCard({
     super.key,
@@ -19,6 +20,7 @@ class CategoryCard extends StatelessWidget {
     required this.onTap,
     this.customColor,
     this.customIcon,
+    this.onDelete,
   });
 
   Color _getCategoryColor() {
@@ -96,26 +98,53 @@ class CategoryCard extends StatelessWidget {
                       size: 32,
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: categoryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: categoryColor.withOpacity(0.3),
-                        width: 1,
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: categoryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: categoryColor.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          categoryCode,
+                          style: AppTextStyles.h5.copyWith(
+                            color: categoryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      categoryCode,
-                      style: AppTextStyles.h5.copyWith(
-                        color: categoryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                      if (onDelete != null) ...[
+                        const SizedBox(width: AppSpacing.xs),
+                        InkWell(
+                          onTap: onDelete,
+                          borderRadius: BorderRadius.circular(6),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: AppColors.errorLight,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: AppColors.error.withOpacity(0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.delete_outline,
+                              size: 16,
+                              color: AppColors.error,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
